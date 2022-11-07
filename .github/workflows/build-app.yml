@@ -102,12 +102,8 @@ jobs:
           echo "db-port=${{ job.services.oracle.ports[1521]}} " >> $GITHUB_OUTPUT
 
       - name: Setup postgres
-        if: !inputs.use-oracle
+        if: (!inputs.use-oracle)
         run: |
-          echo "Henter og starter Oracle image"
-          cd .oracle
-          docker-compose up --quiet-pull > nohup.out 2>&1 &
-          sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
           echo "db-port=${{ job.services.postgres.ports[5432]}} " >> $GITHUB_OUTPUT
 
       - name: Build artifacts without sonar
