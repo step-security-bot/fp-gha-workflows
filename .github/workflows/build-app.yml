@@ -101,13 +101,13 @@ jobs:
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
           echo "db-port=${{ job.services.oracle.ports[1521]}}" >> $GITHUB_OUTPUT
 
-      - name: Build with multithreading
+      - name: Use custom thread configuration
         run: |
           echo "Runs-on=${{ inputs.runs-on }}"
-          if ! [[ $inputs.runs-on =~ ^ubuntu-latest$ ]]; then
+          if [[ $inputs.runs-on != "ubuntu-latest" ]] then
             echo "threads-tag=$(echo '-T 2C' )" >> $GITHUB_ENV
           fi
-          echo "Generated thread-tag = $threads-tag"
+          echo "Generated thread-tag = ${{ threads-tag }}"
 
       - name: Setup postgres
         if: (!inputs.use-oracle)
@@ -119,7 +119,7 @@ jobs:
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
           mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}" -s settings.xml
-          mvn verify -s settings.xml $threads-tag -q -e -B -Dfile.encoding=UTF-8
+          mvn verify -s settings.xml ${{ env.threads-tag }} -q -e -B -Dfile.encoding=UTF-8
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: ${{ env.db-port }}
@@ -129,7 +129,7 @@ jobs:
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
-          mvn jacoco:prepare-agent install jacoco:report -s settings.xml $threads-tag -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
+          mvn jacoco:prepare-agent install jacoco:report -s settings.xml ${{env.threads-tag }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
