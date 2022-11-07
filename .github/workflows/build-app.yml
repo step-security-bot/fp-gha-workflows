@@ -60,10 +60,12 @@ jobs:
 
       - name: Generate build version
         id: generate-build-version
-        run: echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+        run: |
+          echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $github_sha | cut -c1-7)" >> $GITHUB_OUTPUT
+          echo "build-version=${{ steps.generate-build-version.outputs.build-version }}" >> $GITHUB_ENV
 
       - name: Print build version
-        run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
+        run: echo "Generated build-version is ${{ env.build-version }}"
 
       - name: Login to GitHub Packages Docker Registry
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -84,11 +86,11 @@ jobs:
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
 
       - name: Set maven artifact version
-        run: mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
+        run: mvn versions:set -DnewVersion="${{ env.build-version }}"
 
       - name: Build artifacts with maven
         run: |
-          echo "Building artifacts ${steps.generate-build-version.outputs.build-version}"
+          echo "Building artifacts ${{ env.build-version }}"
           mvn verify -T 2C -q -e -B -s settings.xml -Dfile.encoding=UTF-8
         env:
           DATABASE_HOST: localhost
@@ -107,6 +109,6 @@ jobs:
           platforms: linux/amd64, linux/arm64
           pull: true
           push: ${{ github.ref_name == 'master' || github.ref_name == 'main' && inputs.push }}
-          tags: ghcr.io/${{ github.repository }}:${{env.BUILD_VERSION}}, ghcr.io/${{ github.repository }}:latest
+          tags: ghcr.io/${{ github.repository }}:${{ env.build-version }}, ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
