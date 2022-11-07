@@ -14,14 +14,14 @@ on:
 
 jobs:
   maintain-issues:
-    name: Maintain issues
+    name: Close/Create
     runs-on: 'ubuntu-latest'
     env:
       TZ: "Europe/Oslo"
     outputs:
       issue-number: ${{ steps.create-deploy-issue.outputs.issue-number }}
     steps:
-      - name: Lukk gamle deployment-issues
+      - name: Close old deployment-issues
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -42,7 +42,7 @@ jobs:
               });
             });
 
-      -  name: Opprett deployment issue
+      -  name: Create deployment issue
          if: success()
          id: create-deploy-issue
          uses: actions/github-script@v6

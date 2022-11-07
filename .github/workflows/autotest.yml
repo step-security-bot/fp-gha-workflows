@@ -19,7 +19,7 @@ on:
 
 jobs:
   trigger-autotest:
-    name: Trigger verdikjedetest
+    name: Trigger
     runs-on: 'ubuntu-latest'
     env:
       TZ: "Europe/Oslo"
