@@ -58,7 +58,7 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: .deploy/${{ inputs.resource-file }}
+          RESOURCE: .deploy/${{ inputs.resource }}
           VARS: .deploy/dev-fss-${{ inputs.namespace }}.json
 
       - name: Oppdater kommentar med deployment status ved feil mot dev
@@ -97,7 +97,7 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: .deploy/${{ inputs.resource-file }}
+          RESOURCE: .deploy/${{ inputs.resource }}
           VARS: .deploy/prod-fss-${{ inputs.namespace }}.json
 
       - name: Oppdater kommentar med deployment status ved feil mot prod
