@@ -107,7 +107,7 @@ jobs:
           if [[ $inputs.runs-on != "ubuntu-latest" ]] then
             echo "threads-tag=$(echo '-T 2C' )" >> $GITHUB_ENV
           fi
-          echo "Generated thread-tag = ${{ threads-tag }}"
+          echo "Generated thread-tag = ${{ env.threads-tag }}"
 
       - name: Setup postgres
         if: (!inputs.use-oracle)
