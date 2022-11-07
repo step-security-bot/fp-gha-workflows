@@ -1,4 +1,4 @@
-name: Maintain issues
+name: Autotest
 
 on:
   workflow_call:
