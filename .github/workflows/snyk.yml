@@ -67,7 +67,7 @@ jobs:
           --org=teamforeldrepenger
           --all-projects
           --configuration-attributes=usage:java-runtime
-          --severity-threshold=critical
+          --severity-threshold=high
           --remote-repo-url=https://github.com/${{ github.repository }}.git
           -- -s settings.xml
         env:
