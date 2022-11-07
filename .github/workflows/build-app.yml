@@ -142,5 +142,5 @@ jobs:
           pull: true
           push: ${{ inputs.push }}
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          #cache-from: type=gha
+          #cache-to: type=gha,mode=max
