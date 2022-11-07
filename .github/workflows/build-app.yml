@@ -32,6 +32,8 @@ jobs:
   build-and-test:
     name: Build and test app
     runs-on: ${{ inputs.runs-on }}
+    env:
+      TZ: "Europe/Oslo"
     outputs:
       build-version: ${{ steps.generate-build-version.outputs.build-version }}
     steps:
@@ -76,8 +78,6 @@ jobs:
       - name: Hent og start Oracle image
         if: inputs.use-oracle
         id: oracle
-        env:
-          TZ: "Europe/Oslo"
         run: |
           echo "Henter og starter Oracle image"
           cd .oracle
