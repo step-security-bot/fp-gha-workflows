@@ -16,6 +16,7 @@ on:
 jobs:
   snyk-monitor-docker:
     name: Docker
+    if: github.ref_name == 'master'
     runs-on: 'ubuntu-latest'
     steps:
       - name: Run Snyk to check Docker images for vulnerabilities
