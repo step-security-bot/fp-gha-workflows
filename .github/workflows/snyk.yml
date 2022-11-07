@@ -19,6 +19,13 @@ jobs:
     if: github.ref_name == 'master'
     runs-on: 'ubuntu-latest'
     steps:
+      - name: Login to GitHub Packages Docker Registry
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run Snyk to check Docker images for vulnerabilities
         uses: snyk/actions/docker@master
         env:
