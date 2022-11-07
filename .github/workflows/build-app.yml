@@ -84,13 +84,11 @@ jobs:
           docker-compose up --quiet-pull > nohup.out 2>&1 &
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
 
-      - name: Set maven artifact version
-        run: mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }} -s settings.xml"
-
       - name: Build artifacts with maven
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
-          mvn verify -T 2C -q -e -B -s settings.xml -Dfile.encoding=UTF-8
+          mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
+          mvn verify -s settings.xml -T 2C -q -e -B -Dfile.encoding=UTF-8
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: ${{ job.services.oracle.ports[1521] }}
