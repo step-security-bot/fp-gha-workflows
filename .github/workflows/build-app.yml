@@ -104,7 +104,7 @@ jobs:
       - name: Use custom thread configuration
         run: |
           echo "Runs-on=${{ inputs.runs-on }}"
-          if [[ $inputs.runs-on != "ubuntu-latest" ]] then
+          if [[ $inputs.runs-on != "ubuntu-latest" ]]; then
             echo "threads-tag=$(echo '-T 2C' )" >> $GITHUB_ENV
           fi
           echo "Generated thread-tag = ${{ env.threads-tag }}"
