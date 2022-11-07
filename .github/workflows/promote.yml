@@ -60,7 +60,7 @@ jobs:
         if: steps.deloy-dev.outcome != 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
-          github-token: ${{s ecrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issue = { owner: context.issue.owner,
                             repo: context.issue.repo,
@@ -74,7 +74,7 @@ jobs:
         if: steps.deloy-dev.outcome == 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
-          github-token: ${{secrets.GITHUB_TOKEN}}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const issue = { owner: context.issue.owner,
                             repo: context.issue.repo,
