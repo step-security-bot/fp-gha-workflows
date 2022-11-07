@@ -100,7 +100,7 @@ jobs:
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
 
       - name: Build artifacts without sonar
-        if: !inputs.sonar-scan
+        if: (!inputs.sonar-scan || github.actor == 'dependabot[bot]')
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
@@ -110,11 +110,11 @@ jobs:
           DATABASE_PORT: ${{ inputs.db-port }}
 
       - name: Build artifacts with sonar
-        if: inputs.sonar-scan
+        if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
-          mvn jacoco:prepare-agent install -T 2C -s settings.xml -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
+          mvn jacoco:prepare-agent install jacoco:report -T 2C -s settings.xml -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
