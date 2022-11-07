@@ -25,7 +25,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           command: monitor
-          image: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}:${{ inputs.build-version }}
+          image: ghcr.io/${{ github.repository }}:${{ inputs.build-version }}
           args: --org=teamforeldrepenger --severity-threshold=critical --project-name=${{ github.repository }}
 
   snyk-monitor-code:
