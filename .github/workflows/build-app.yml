@@ -52,7 +52,7 @@ jobs:
           output_file: settings.xml
 
       - name: Set up JDK${{ inputs.java-version }} with cache
-      - uses: actions/setup-java@v3
+        uses: actions/setup-java@v3
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
