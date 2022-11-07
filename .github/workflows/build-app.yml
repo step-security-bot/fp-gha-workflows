@@ -144,7 +144,3 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-job:
-  services:
-    oracle:
-      ports[1521]:
