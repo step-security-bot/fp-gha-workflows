@@ -116,6 +116,8 @@ jobs:
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
           mvn jacoco:prepare-agent install -T 2C -s settings.xml -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
         env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_HOST: ${{ inputs.db-host }}
           DATABASE_PORT: ${{ inputs.db-port }}
 
