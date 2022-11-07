@@ -18,16 +18,6 @@ on:
         type: boolean
         description: Skal oracle database brukes?
         default: true
-      db-port:
-        required: false
-        type: string
-        description: Port of the running databse
-        default: job.services.oracle.ports[1521]
-      db-host:
-        required: false
-        type: string
-        description: Host of the running database
-        default: localhost
       sonar-scan:
         required: false
         type: boolean
@@ -47,6 +37,17 @@ jobs:
   build-and-test:
     name: Build and test
     runs-on: ${{ inputs.runs-on }}
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: fpabakus_unit
+          POSTGRES_PASSWORD: fpabakus_unit
+          POSTGRES_DB: fpabakus_unit
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       TZ: "Europe/Oslo"
     outputs:
@@ -98,6 +99,16 @@ jobs:
           cd .oracle
           docker-compose up --quiet-pull > nohup.out 2>&1 &
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
+          echo "db-port=${{ job.services.oracle.ports[1521]}} " >> $GITHUB_OUTPUT
+
+      - name: Setup postgres
+        if: !inputs.use-oracle
+        run: |
+          echo "Henter og starter Oracle image"
+          cd .oracle
+          docker-compose up --quiet-pull > nohup.out 2>&1 &
+          sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
+          echo "db-port=${{ job.services.postgres.ports[5432]}} " >> $GITHUB_OUTPUT
 
       - name: Build artifacts without sonar
         if: (!inputs.sonar-scan || github.actor == 'dependabot[bot]')
@@ -106,8 +117,8 @@ jobs:
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
           mvn verify -s settings.xml -T 2C -q -e -B -Dfile.encoding=UTF-8
         env:
-          DATABASE_HOST: ${{ inputs.db-host }}
-          DATABASE_PORT: ${{ inputs.db-port }}
+          DATABASE_HOST: localhost
+          DATABASE_PORT: ${{ env.db-port }}
 
       - name: Build artifacts with sonar
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
@@ -118,7 +129,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DATABASE_HOST: ${{ inputs.db-host }}
+          DATABASE_HOST: localhost
           DATABASE_PORT: ${{ inputs.db-port }}
 
       - name: Set up QEMU
@@ -137,3 +148,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+job:
+  services:
+    oracle:
+      ports[1521]:
