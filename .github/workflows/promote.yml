@@ -11,6 +11,11 @@ on:
         required: true
         type: string
         description: 'The deployment issue.'
+      resource:
+        required: false
+        type: string
+        description: 'The deploy resource file.'
+        default: 'naiserator.yaml'
       namespace:
         required: false
         type: string
@@ -53,7 +58,7 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
-          RESOURCE: .deploy/naiserator.yaml
+          RESOURCE: .deploy/${{ inputs.resource-file }}
           VARS: .deploy/dev-fss-${{ inputs.namespace }}.json
 
       - name: Oppdater kommentar med deployment status ved feil mot dev
@@ -92,7 +97,7 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
-          RESOURCE: .deploy/naiserator.yaml
+          RESOURCE: .deploy/${{ inputs.resource-file }}
           VARS: .deploy/prod-fss-${{ inputs.namespace }}.json
 
       - name: Oppdater kommentar med deployment status ved feil mot prod
