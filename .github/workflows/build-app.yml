@@ -30,6 +30,7 @@ on:
 
 jobs:
   build-and-test:
+    name: Build and test app
     runs-on: ${{ inputs.runs-on }}
     outputs:
       build-version: ${{ steps.generate-build-version.outputs.build-version }}
@@ -59,8 +60,7 @@ jobs:
 
       - name: Generate build version
         id: generate-build-version
-        run: |
-          echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+        run: echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Print build version
         run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
@@ -87,12 +87,10 @@ jobs:
         run: mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
 
       - name: Build artifacts with maven
-        # TODO: Trenger en versjon som støtter sonar også.
         run: |
           echo "Building artifacts ${steps.generate-build-version.outputs.build-version}"
           mvn verify -T 2C -q -e -B -s settings.xml -Dfile.encoding=UTF-8
         env:
-        # TODO: Trenger parametrisering for postgres
           DATABASE_HOST: localhost
           DATABASE_PORT: ${{ job.services.oracle.ports[1521] }}
 
@@ -112,4 +110,3 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{env.BUILD_VERSION}}, ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
