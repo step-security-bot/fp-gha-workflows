@@ -11,7 +11,7 @@ on:
       t-2c:
         required: false
         type: string
-        description: Miljø versjon som skal brukes til bygg.
+        description: Tråd konfig til maven.
         default: ''
       java-version:
         required: false
