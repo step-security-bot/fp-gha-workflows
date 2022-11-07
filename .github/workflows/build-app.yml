@@ -126,7 +126,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_HOST: localhost
-          DATABASE_PORT: ${{ inputs.db-port }}
+          DATABASE_PORT: ${{ env.db-port }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
