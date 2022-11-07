@@ -14,7 +14,7 @@ on:
 
 jobs:
   maintain-issues:
-    name: Close/Create
+    name: Close / Create
     runs-on: 'ubuntu-latest'
     env:
       TZ: "Europe/Oslo"
