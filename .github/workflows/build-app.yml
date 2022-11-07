@@ -110,8 +110,8 @@ jobs:
         if: (!inputs.sonar-scan || github.actor == 'dependabot[bot]')
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
-          mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
-          mvn verify -s settings.xml -T 2C -q -e -B -Dfile.encoding=UTF-8
+          mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}" -s settings.xml
+          mvn verify -s settings.xml -q -e -B -Dfile.encoding=UTF-8
         env:
           DATABASE_HOST: localhost
           DATABASE_PORT: ${{ env.db-port }}
@@ -121,7 +121,7 @@ jobs:
         run: |
           echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
           mvn versions:set -s settings.xml -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
-          mvn jacoco:prepare-agent install jacoco:report -T 2C -s settings.xml -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
+          mvn jacoco:prepare-agent install jacoco:report -s settings.xml -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec -Dfile.encoding=UTF-8
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -142,5 +142,5 @@ jobs:
           pull: true
           push: ${{ inputs.push }}
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
-          #cache-from: type=gha
-          #cache-to: type=gha,mode=max
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
