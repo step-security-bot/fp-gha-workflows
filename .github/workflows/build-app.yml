@@ -85,7 +85,7 @@ jobs:
           sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
 
       - name: Set maven artifact version
-        run: mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}"
+        run: mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }} -s settings.xml"
 
       - name: Build artifacts with maven
         run: |
