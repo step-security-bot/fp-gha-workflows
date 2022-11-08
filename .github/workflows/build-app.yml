@@ -134,3 +134,7 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Clean up generated stuff before caching
+        run: |
+          rm ~/.m2/repository/no/nav/foreldrepenger -r
