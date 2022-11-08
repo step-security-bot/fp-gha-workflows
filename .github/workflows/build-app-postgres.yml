@@ -3,6 +3,10 @@ name: Build app
 on:
   workflow_call:
     inputs:
+      postgres-user:
+        required: true
+        type: string
+        description: Name of the db, user and pass.
       runs-on:
         required: false
         type: string
@@ -31,7 +35,7 @@ on:
       push-image:
         required: false
         type: boolean
-        description: Skal docker image pushes?
+        description: Skal docker image pushes
         default: false
     outputs:
       build-version:
@@ -42,6 +46,17 @@ jobs:
   build-and-test:
     name: Build and test
     runs-on: ${{ inputs.runs-on }}
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: ${{ inputs.postgres-user }}
+          POSTGRES_PASSWORD: ${{ inputs.postgres-user }}
+          POSTGRES_DB: ${{ inputs.postgres-user }}
+        ports:
+          - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       TZ: "Europe/Oslo"
     outputs:
@@ -85,14 +100,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create and start Oracle database
-        id: oracle
-        run: |
-          echo "Henter og starter Oracle image"
-          cd .oracle
-          docker-compose up --quiet-pull > nohup.out 2>&1 &
-          sh -c 'tail -n +0 -f nohup.out | { sed "/Database opened./q" && kill $$; }' || true
-
       - name: Build artifacts without sonar
         if: (!inputs.sonar-scan || github.actor == 'dependabot[bot]')
         run: |
@@ -101,7 +108,7 @@ jobs:
           mvn verify -s settings.xml ${{ inputs.t-2c }} -q -e -B
         env:
           DATABASE_HOST: localhost
-          DATABASE_PORT: ${{ job.services.oracle.ports[1521] }}
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Build artifacts with sonar
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
@@ -113,7 +120,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATABASE_HOST: localhost
-          DATABASE_PORT: ${{ job.services.oracle.ports[1521] }}
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Set up QEMU
         if: inputs.build-image
