@@ -52,7 +52,7 @@ jobs:
 
       - name: Deploy to dev
         if: inputs.cluster == 'dev-fss' || inputs.cluster == ''
-        id: deloy-dev
+        id: deploy-dev
         uses: nais/deploy/actions/deploy@v1
         env:
           PRINT_PAYLOAD: true
@@ -61,7 +61,7 @@ jobs:
           RESOURCE: .deploy/${{ inputs.resource }}
 
       - name: Oppdater kommentar med deployment status ved feil mot dev
-        if: steps.deloy-dev.outcome != 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
+        if: steps.deploy-dev.outcome != 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -75,7 +75,7 @@ jobs:
                             labels: ['deployment-failed']})
 
       - name: Oppdater kommentar med deployment status mot dev
-        if: steps.deloy-dev.outcome == 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
+        if: steps.deploy-dev.outcome == 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
