@@ -45,19 +45,19 @@ jobs:
         with:
           ref: ${{ steps.issue_comment.outputs.sha }}
 
-      - name: Deploy to dev
-        if: inputs.cluster == 'dev-fss' || inputs.cluster == ''
+      - name: Deploy to ${{ input.cluster:dev-fss }}
+        if: startsWith(inputs.cluster, 'dev-') || inputs.cluster == ''
         id: deploy-dev
         uses: nais/deploy/actions/deploy@v1
         env:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
+          CLUSTER: ${{ inputs.cluster:dev-fss }}
           RESOURCE: .deploy/naiserator.yaml
-          VARS: .deploy/dev-fss-${{ inputs.namespace }}.json
+          VARS: .deploy/${{ inputs.cluster:dev-fss }}-${{ inputs.namespace }}.json
 
-      - name: Oppdater kommentar med deployment status ved feil mot dev
-        if: steps.deploy-dev.outcome != 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
+      - name: Oppdater kommentar med deployment status ved feil mot ${{ inputs.cluster:dev-fss }}
+        if: steps.deploy-dev.outcome != 'success' && (startsWith(inputs.cluster, 'dev-') || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,12 +66,12 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til dev-fss ${{ inputs.namespace }} feilet'})
+                            body: 'promote til ${{ inputs.cluster:dev-fss }} ${{ inputs.namespace }} feilet'})
             github.rest.issues.addLabels({...issue,
                             labels: ['deployment-failed']})
 
-      - name: Oppdater kommentar med deployment status mot dev
-        if: steps.deploy-dev.outcome == 'success' && (inputs.cluster == 'dev-fss' || inputs.cluster == '')
+      - name: Oppdater kommentar med deployment status mot ${{ inputs.cluster:dev-fss }}
+        if: steps.deploy-dev.outcome == 'success' && (startsWith(inputs.cluster, 'dev-') || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -80,23 +80,23 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til dev-fss ${{ inputs.namespace }} utført'})
+                            body: 'promote til ${{ inputs.cluster:dev-fss }} ${{ inputs.namespace }} utført'})
             github.rest.issues.addLabels({...issue,
-                            labels: ['deployment','dev-fss-${{ inputs.namespace }}']})
+                            labels: ['deployment','${{ inputs.cluster:dev-fss }}-${{ inputs.namespace }}']})
 
-      - name: Deploy to prod
-        if: success() && (inputs.cluster == 'prod-fss' || inputs.cluster == '')
-        id: deloy-prod
+      - name: Deploy to ${{ inputs.cluster:prod-fss }}
+        if: success() && (startsWith(inputs.cluster, 'prod-') || inputs.cluster == '')
+        id: deploy-prod
         uses: nais/deploy/actions/deploy@v1
         env:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
+          CLUSTER: ${{ inputs.cluster:prod-fss }}
           RESOURCE: .deploy/naiserator.yaml
-          VARS: .deploy/prod-fss-${{ inputs.namespace }}.json
+          VARS: .deploy/${{ inputs.cluster:prod-fss }}-${{ inputs.namespace }}.json
 
-      - name: Oppdater kommentar med deployment status ved feil mot prod
-        if: steps.deloy-prod.outcome != 'success' && (inputs.cluster == 'prod-fss' || inputs.cluster == '')
+      - name: Oppdater kommentar med deployment status ved feil mot ${{ inputs.cluster:prod-fss }}
+        if: steps.deploy-prod.outcome != 'success' && (startsWith(inputs.cluster, 'prod-') || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -105,12 +105,12 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til prod-fss ${{ inputs.namespace }} feilet'})
+                            body: 'promote til ${{ inputs.cluster:prod-fss }} ${{ inputs.namespace }} feilet'})
             github.rest.issues.addLabels({...issue,
                             labels: ['deployment-failed']})
 
-      - name: Oppdater kommentar med deployment status mot prod
-        if: steps.deloy-prod.outcome == 'success' && (inputs.cluster == 'prod-fss' || inputs.cluster == '')
+      - name: Oppdater kommentar med deployment status mot ${{ inputs.cluster:prod-fss }}
+        if: steps.deploy-prod.outcome == 'success' && (startsWith(inputs.cluster, 'prod-') || inputs.cluster == '')
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -119,6 +119,6 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til prod-fss ${{ inputs.namespace }} utført'})
+                            body: 'promote til ${{ inputs.cluster:prod-fss }} ${{ inputs.namespace }} utført'})
             github.rest.issues.addLabels({...issue,
-                            labels: ['deployment','prod-fss-${{ inputs.namespace }}']})
+                            labels: ['deployment','${{ inputs.cluster:prod-fss }}-${{ inputs.namespace }}']})
