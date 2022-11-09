@@ -69,7 +69,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
-         # cache: 'maven'
+          cache: 'maven'
 
       - name: Generate build version
         id: generate-build-version
