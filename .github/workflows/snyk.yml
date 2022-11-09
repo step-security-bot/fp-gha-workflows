@@ -83,7 +83,7 @@ jobs:
       - name: Build
         run: |
           echo "Building ${{ inputs.build-version }}"
-          mvn -B -s settings.xml versions:set -DnewVersion=${{ inputs.build-version }}
+          mvn -q -B -s settings.xml versions:set -DnewVersion=${{ inputs.build-version }}
           mvn install -q -B -s settings.xml -DskipTests
 
       - name: Run Snyk monitor
