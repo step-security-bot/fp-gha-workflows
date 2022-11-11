@@ -23,8 +23,8 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        cluster: ${{ inputs.cluster }}
-        namespace: ${{ inputs.namespace }}
+        cluster: ${{ fromJson(inputs.cluster) }}
+        namespace: ${{ fromJson(inputs.namespace) }}
     steps:
       - name: Get information from issue
         id: issue_comment
