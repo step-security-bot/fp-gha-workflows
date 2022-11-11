@@ -11,7 +11,7 @@ on:
         required: false
         type: string
         description: 'The namespace(s) to deploy to. Comma separated list if many.'
-        default: '[teamforeldrepenger]'
+        default: '["teamforeldrepenger"]'
       issue-number:
         required: true
         type: string
