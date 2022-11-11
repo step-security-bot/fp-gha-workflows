@@ -6,11 +6,7 @@ on:
       cluster:
         required: true
         type: string
-        description: 'The clusters to deploy to. Comma separated list if many.'
-      namespace:
-        required: true
-        type: string
-        description: 'The namespace(s) to deploy to. Array with comma separated elements if many.'
+        description: 'The clusters to deploy to. Array with comma separated elements.'
       issue-number:
         required: true
         type: string
@@ -18,12 +14,12 @@ on:
 
 jobs:
   promote:
-    name: promote
+    name: to
     runs-on: 'ubuntu-latest'
     strategy:
+      fail-fast: true
       matrix:
         cluster: ${{ fromJson(inputs.cluster) }}
-        namespace: ${{ fromJson(inputs.namespace) }}
     steps:
       - name: Get information from issue
         id: issue_comment
@@ -56,7 +52,7 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ matrix.cluster }}
           RESOURCE: .deploy/naiserator.yaml
-          VARS: .deploy/${{ matrix.cluster }}-${{ matrix.namespace }}.json
+          VARS: .deploy/${{ matrix.cluster }}-teamforeldrepenger.json
 
       - name: Oppdater kommentar med deployment status ved feil mot ${{ matrix.cluster }}
         if: steps.deploy.outcome != 'success'
@@ -68,7 +64,7 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til ${{ matrix.cluster }} ${{ matrix.namespace }} feilet'})
+                            body: 'promote til ${{ matrix.cluster }} teamforeldrepenger feilet'})
             github.rest.issues.addLabels({...issue,
                             labels: ['deployment-failed']})
 
@@ -82,6 +78,6 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til ${{ matrix.cluster }} ${{ matrix.namespace }} utført'})
+                            body: 'promote til ${{ matrix.cluster }} teamforeldrepenger utført'})
             github.rest.issues.addLabels({...issue,
-                            labels: ['deployment','${{ matrix.cluster }}-${{ matrix.namespace }}']})
+                            labels: ['deployment','${{ matrix.cluster }}-teamforeldrepenger']})
