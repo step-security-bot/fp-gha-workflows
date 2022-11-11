@@ -11,7 +11,7 @@ on:
         required: false
         type: string
         description: 'The namespace(s) to deploy to. Comma separated list if many.'
-        default: 'teamforeldrepenger'
+        default: '[teamforeldrepenger]'
       issue-number:
         required: true
         type: string
@@ -23,8 +23,8 @@ jobs:
     runs-on: 'ubuntu-latest'
     strategy:
       matrix:
-        cluster: [ ${{ inputs.cluster }} ]
-        namespace: [ ${{ inputs.namespace }} ]
+        cluster: ${{ inputs.cluster }}
+        namespace: ${{ inputs.namespace }}
     steps:
       - name: Get information from issue
         id: issue_comment
