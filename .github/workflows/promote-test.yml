@@ -8,10 +8,9 @@ on:
         type: string
         description: 'The clusters to deploy to. Comma separated list if many.'
       namespace:
-        required: false
+        required: true
         type: string
-        description: 'The namespace(s) to deploy to. Comma separated list if many.'
-        default: '["teamforeldrepenger"]'
+        description: 'The namespace(s) to deploy to. Array with comma separated elements if many.'
       issue-number:
         required: true
         type: string
