@@ -54,6 +54,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create maven .m2 settings
+        if: github.actor != 'dependabot[bot]'
         uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
