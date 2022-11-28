@@ -1,0 +1,128 @@
+name: Build app
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        required: false
+        type: string
+        description: Miljø versjon som skal brukes til bygg.
+        default: 'ubuntu-latest'
+      t-2c:
+        required: false
+        type: string
+        description: Tråd konfig til maven.
+        default: ''
+      java-version:
+        required: false
+        type: string
+        description: Java SDK versjon som skal brukes.
+        default: '17'
+      sonar-scan:
+        required: false
+        type: boolean
+        description: Skal sonar scan brukes?
+        default: false
+      build-image:
+        required: false
+        type: boolean
+        description: Skal docker image bygges?
+        default: true
+      push-image:
+        required: false
+        type: boolean
+        description: Skal docker image pushes?
+        default: false
+      use-token:
+        required: false
+        type: string
+        description: Hvilket token skal brukes?
+        default: GITHUB_TOKEN
+    outputs:
+      build-version:
+        description: "Build version"
+        value: ${{ jobs.build-and-test.outputs.build-version }}
+
+jobs:
+  build-and-test:
+    name: Build and test
+    runs-on: ${{ inputs.runs-on }}
+    env:
+      TZ: "Europe/Oslo"
+    outputs:
+      build-version: ${{ steps.generate-build-version.outputs.build-version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.1.0
+        # checkout gir shallow copy - fetch-depth: 0 vil tilgjengeliggjøre tags
+        with:
+          fetch-depth: 0
+
+      - name: Create maven .m2 settings
+        uses: whelk-io/maven-settings-xml-action@v21
+        with:
+          repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
+              "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" }}]'
+          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.${{ inputs.use-token }} }}" }]'
+          output_file: settings.xml
+
+      - name: Set up JDK-${{ inputs.java-version }} with cache
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Generate build version
+        id: generate-build-version
+        run: |
+          echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+
+      - name: Print build version
+        run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
+
+      - name: Build artifacts
+        run: |
+          echo "Building artifacts ${{ steps.generate-build-version.outputs.build-version }}"
+          mvn versions:set -DnewVersion="${{ steps.generate-build-version.outputs.build-version }}" -s settings.xml -q -e -B
+          mvn install -s settings.xml ${{ inputs.t-2c }} -q -e -B
+
+      - name: Sonar analyse
+        if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
+        run: |
+          mvn jacoco:report sonar:sonar -s settings.xml ${{ inputs.t-2c }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub Packages Docker Registry
+        if: (inputs.build-image && inputs.push-image)
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up QEMU
+        if: inputs.build-image
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        if: inputs.build-image
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        if: inputs.build-image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          platforms: linux/amd64, linux/arm64
+          pull: true
+          push: ${{ inputs.push-image }}
+          tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Clean up generated stuff before caching
+        run: |
+          rm ~/.m2/repository/no/nav/foreldrepenger -r
