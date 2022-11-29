@@ -23,6 +23,11 @@ on:
         type: boolean
         description: Skal sonar scan brukes?
         default: false
+      use-reader:
+        required: false
+        type: boolean
+        description: Hvilket token skal brukes?
+        default: false
     outputs:
       build-version:
         description: "Build version"
@@ -41,12 +46,22 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create maven .m2 settings
+      - name: Create maven .m2 settings for GITHUB
+        if: ${{ !inputs.use-reader }}
         uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
               "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" }}]'
-          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
+          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN}}" }]'
+          output_file: settings.xml
+
+      - name: Create maven .m2 settings for READER
+        if: inputs.use-reader
+        uses: whelk-io/maven-settings-xml-action@v21
+        with:
+          repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
+              "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" }}]'
+          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.READER_TOKEN}}" }]'
           output_file: settings.xml
 
       - name: Set up JDK-${{ inputs.java-version }} with cache
@@ -73,7 +88,7 @@ jobs:
       - name: Sonar analyse
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
         run: |
-          mvn jacoco:report sonar:sonar -s settings.xml ${{ inputs.t-2c }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec
+          mvn jacoco:prepare-agent test jacoco:report sonar:sonar -s settings.xml ${{ inputs.t-2c }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

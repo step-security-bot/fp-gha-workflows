@@ -113,7 +113,7 @@ jobs:
       - name: Sonar analyse
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
         run: |
-          mvn jacoco:report sonar:sonar -s settings.xml ${{ inputs.t-2c }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec
+          mvn jacoco:prepare-agent test jacoco:report sonar:sonar -s settings.xml ${{ inputs.t-2c }} -e -q -B -Djacoco.destFile=$(pwd)/target/jacoco.exec
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
