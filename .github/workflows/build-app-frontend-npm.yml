@@ -13,6 +13,11 @@ on:
         type: string
         description: Node version som brukes.
         default: '18.8.0'
+      legacy-peer-deps:
+        required: false
+        type: string
+        description: Skal legge på --legacy-peer-deps ved npm install.
+        default: true
       build-image:
         required: false
         type: boolean
@@ -50,7 +55,10 @@ jobs:
           scope: '@navikt'
           cache: 'npm'
 
-      - run: npm install --legacy-peer-deps
+      - if: inputs.legacy-peer-deps
+        run: npm install --legacy-peer-deps
+      - if: !inputs.legacy-peer-deps
+        run: npm install
       - run: npm run jest
       - run: npm run build
 
