@@ -55,9 +55,9 @@ jobs:
           scope: '@navikt'
           cache: 'npm'
 
-      - if: inputs.legacy-peer-deps
+      - if: inputs.legacy-peer-deps == true
         run: npm install --legacy-peer-deps
-      - if: !inputs.legacy-peer-deps
+      - if: inputs.legacy-peer-deps != true
         run: npm install
       - run: npm run jest
       - run: npm run build
