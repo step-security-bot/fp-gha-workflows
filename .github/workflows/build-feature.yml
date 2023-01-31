@@ -36,7 +36,7 @@ on:
 jobs:
   build-and-test:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runs-on }}
     outputs:
       build-version: ${{ steps.generate-build-version.outputs.build-version }}
     steps:
