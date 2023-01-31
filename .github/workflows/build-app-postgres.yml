@@ -43,9 +43,23 @@ on:
         value: ${{ jobs.build-and-test.outputs.build-version }}
 
 jobs:
+  setup-runner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.runner.outputs.runner }}
+    steps:
+      - name: Velg runner basert på aktør som oppretter PR
+        id: runner
+        run: |
+          if [ ${{ github.actor }} == 'dependabot[bot]' ]; then
+            echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
+          else
+            echo "runner=${{ inputs.runs-on }}" >> $GITHUB_OUTPUT
+          fi
+
   build-and-test:
     name: Build and test
-    runs-on: ${{ inputs.runs-on }}
+    runs-on: ${{ needs.setup-runner.outputs.runner }}
     services:
       postgres:
         image: postgres:12

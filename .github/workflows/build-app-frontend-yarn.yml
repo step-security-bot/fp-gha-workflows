@@ -35,10 +35,10 @@ jobs:
     outputs:
       runner: ${{ steps.runner.outputs.runner }}
     steps:
-      - name: Sjekk branch
+      - name: Velg runner basert på aktør som oppretter PR
         id: runner
         run: |
-          if [ ${{ github.ref }} == 'dependabot[bot]' ]; then
+          if [ ${{ github.actor }} == 'dependabot[bot]' ]; then
             echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
           else
             echo "runner=${{ inputs.runs-on }}" >> $GITHUB_OUTPUT
