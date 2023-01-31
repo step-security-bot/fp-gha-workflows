@@ -50,6 +50,7 @@ jobs:
 
   build-and-test:
     name: Build and test
+    needs: [setup-runner]
     runs-on: ${{ needs.setup-runner.outputs.runner }}
     outputs:
       build-version: ${{ steps.generate-build-version.outputs.build-version }}

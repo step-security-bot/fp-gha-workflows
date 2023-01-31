@@ -60,6 +60,7 @@ jobs:
 
   build-and-test:
     name: Build and test
+    needs: [setup-runner]
     runs-on: ${{ needs.setup-runner.outputs.runner }}
     env:
       TZ: "Europe/Oslo"
