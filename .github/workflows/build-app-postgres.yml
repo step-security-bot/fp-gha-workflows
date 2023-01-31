@@ -59,7 +59,7 @@ jobs:
 
   build-and-test:
     name: Build and test
-    runs-on: ${{ needs.setup-runner.outputs.runner }}
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:12
