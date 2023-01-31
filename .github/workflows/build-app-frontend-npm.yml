@@ -47,7 +47,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up NODE med yarn/npm
+      - name: Set up NODE med npm
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
@@ -55,10 +55,7 @@ jobs:
           scope: '@navikt'
           cache: 'npm'
 
-      - if: inputs.legacy-peer-deps == true
-        run: npm install --legacy-peer-deps
-      - if: inputs.legacy-peer-deps != true
-        run: npm install
+      - run: npm install --legacy-peer-deps
       - run: npm run jest
       - run: npm run build
 
