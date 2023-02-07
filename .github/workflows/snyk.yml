@@ -71,7 +71,6 @@ jobs:
       - uses: snyk/actions/setup@master
 
       - name: Create maven .m2 settings
-        if: false
         uses: whelk-io/maven-settings-xml-action@v21
         with:
           repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
