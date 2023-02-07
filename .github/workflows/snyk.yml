@@ -87,12 +87,11 @@ jobs:
           mvn install -q -B -s settings.xml -DskipTests
 
       - name: Run Snyk monitor
-        if: github.ref_name == 'master'
+        if: github.ref_name == 'master' && false
         run: >
           snyk monitor
           --org=teamforeldrepenger
           --all-projects
-          --configuration-attributes=usage:java-runtime
           --severity-threshold=high
           --remote-repo-url=https://github.com/${{ github.repository }}.git
           -- -s settings.xml
@@ -100,13 +99,13 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run Snyk test
-        if: github.ref_name != 'master'
         run: >
           snyk test
           --org=teamforeldrepenger
-          --all-projects
-          --configuration-attributes=usage:java-runtime
-          --severity-threshold=critical
+          --maven-aggregate-project
+          --severity-threshold=high
+          --fail-on=all
+          --fail-fast
           --remote-repo-url=https://github.com/${{ github.repository }}.git
           -- -s settings.xml
         env:
