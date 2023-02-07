@@ -61,7 +61,6 @@ jobs:
         uses: actions/checkout@v3.3.0
 
       - name: Set up JDK-${{ inputs.java-version }} with cache
-        if: false
         uses: actions/setup-java@v3
         with:
           java-version: ${{ inputs.java-version }}
