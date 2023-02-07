@@ -80,22 +80,20 @@ jobs:
                     { "id": "github1", "username": "${{ github.actor }}", "password": "${{ secrets.READER_TOKEN }}" }]'
           output_file: settings.xml
 
-      - name: Build
-        if: false
+      - name: Set version
         run: |
           echo "Building ${{ inputs.build-version }}"
           mvn -q -B -s settings.xml versions:set -DnewVersion=${{ inputs.build-version }}
-          mvn install -q -B -s settings.xml -DskipTests
 
       - name: Run Snyk monitor
-        if: github.ref_name == 'master' && false
+        if: github.ref_name == 'master'
         run: >
           snyk monitor
           --org=teamforeldrepenger
-          --all-projects
+          --maven-aggregate-project
           --severity-threshold=high
           --remote-repo-url=https://github.com/${{ github.repository }}.git
-          -- -s settings.xml
+          -- -s settings.xml -DskipTests
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
