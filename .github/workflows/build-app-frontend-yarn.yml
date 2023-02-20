@@ -78,37 +78,15 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run linting
-        run: yarn less:lint && yarn lint && yarn ts-check
-
-      - name: Henter ut filer som har endret seg
-        if: github.ref_name == 'master'
-        run: echo "FILES_CHANGED=$(echo $(git diff --name-only ${{github.event.before}} ${{github.sha}}))" >> $GITHUB_ENV
-
-      - name: Henter ut filer som har endret seg på branch
-        if: github.ref_name != 'master'
-        run: echo "FILES_CHANGED=$(echo $(git diff --name-only origin/master ${{github.sha}}))" >> $GITHUB_ENV
-
-      - name: Run all test and coverage when changes to dependencies
-        if: contains(fromJson('["yarn.lock"]'), env.FILES_CHANGED)
-        id: run-all-tests
-        run: yarn test:coverage
-
-      - name: Run test and coverage only related to changes
-        if: steps.run-all-tests.outcome == 'skipped' && github.ref_name == 'master'
-        run: |
-          echo "Kjøre tester basert på endringene mellom commit og master ${{ github.event.before }}"
-          yarn test:coverage --changedSince=${{ github.event.before }}
-
-      - name: Run test and coverage only related to changes på branch
-        if: steps.run-all-tests.outcome == 'skipped' && github.ref_name != 'master'
-        run: |
-          echo "Kjøre tester basert på endringene mellom commit og master ${{ github.event.before }}"
-          yarn test:coverage --changedSince=origin/master
-
       - name: Build
-        if: github.ref_name == 'master'
         run: yarn build
+
+      - name: Run linting
+        run: yarn stylelint && yarn eslint:changed && yarn tsc:changed
+
+      - name: Run tests
+        id: run-tests
+        run: yarn test:changed
 
       - name: Opprett release med Sentry
         if: github.ref_name == 'master'
