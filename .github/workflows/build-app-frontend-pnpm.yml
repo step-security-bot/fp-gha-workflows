@@ -62,6 +62,9 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Installing pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Set up NODE med pnpm
         uses: actions/setup-node@v3
         with:
