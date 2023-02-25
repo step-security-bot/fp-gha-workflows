@@ -64,6 +64,8 @@ jobs:
 
       - name: Installing pnpm
         uses: pnpm/action-setup@v2
+        with:
+          version: 7.28.0
 
       - name: Set up NODE med pnpm
         uses: actions/setup-node@v3
