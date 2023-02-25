@@ -62,15 +62,15 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up NODE med npm
+      - name: Set up NODE med pnpm
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
           registry-url: https://npm.pkg.github.com/
           scope: "@navikt"
-          cache: "npm"
+          cache: "pnpm"
 
-      - run: pnpm install
+      - run: pnpm install --frozen-lockfile
       - run: pnpm run jest
       - run: pnpm run build
 
