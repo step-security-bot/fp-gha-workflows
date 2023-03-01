@@ -43,7 +43,7 @@ jobs:
         run: docker pull ghcr.io/${{ github.repository }}:${{ inputs.build-version }}
 
       - name: Run Trivy vulnerability scanner non-public repo
-        if: inputs.publish-sarif == 'false'
+        if: inputs.publish-sarif == false
         uses: aquasecurity/trivy-action@master
         with:
           security-checks: 'vuln'
@@ -97,7 +97,7 @@ jobs:
 
       - name: Legger til ekstra argumenter for snyk analyse
         if: inputs.multi-module-maven-project
-        run: echo "EXTRA_ARGS=--maven-aggregate-project " >> $GITHUB_ENV
+        run: echo "EXTRA_ARGS=--maven-aggregate-project" >> $GITHUB_ENV
 
       - name: Run Snyk test
         uses: snyk/actions/maven@master
