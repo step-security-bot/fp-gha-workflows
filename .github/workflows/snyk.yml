@@ -43,7 +43,7 @@ jobs:
         run: docker pull ghcr.io/${{ github.repository }}:${{ inputs.build-version }}
 
       - name: Run Trivy vulnerability scanner non-public repo
-        if: !inputs.publish-sarif
+        if: inputs.publish-sarif == 'false'
         uses: aquasecurity/trivy-action@master
         with:
           security-checks: 'vuln'
