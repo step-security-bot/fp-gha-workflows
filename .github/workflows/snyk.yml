@@ -133,4 +133,4 @@ jobs:
             --org=teamforeldrepenger
             --project-name=${{ github.repository }}
             --remote-repo-url=https://github.com/${{ github.repository }}.git ${{ env.EXTRA_ARGS }}
-            -- -s settings.xml -DskipTests ${{ env.EXTRA_ARGS }}
+            -- -s settings.xml -DskipTests
