@@ -97,7 +97,7 @@ jobs:
 
       - name: Legger til ekstra argumenter for snyk analyse
         if: inputs.multi-module-maven-project
-        run: echo "EXTRA_ARGS=--maven-aggregate-project" >> $GITHUB_ENV
+        run: echo "EXTRA_ARGS=--maven-aggregate-project " >> $GITHUB_ENV
 
       - name: Run Snyk test
         uses: snyk/actions/maven@master
@@ -109,11 +109,11 @@ jobs:
           args: >
             --severity-threshold=high
             --fail-on=all
+            --sarif-file-output=snyk.sarif
             --org=teamforeldrepenger
             --project-name=${{ github.repository }}
-            --remote-repo-url=https://github.com/${{ github.repository }}.git
-            --sarif-file-output=snyk.sarif
-            -- -s settings.xml -DskipTests ${{ env.EXTRA_ARGS }}
+            --remote-repo-url=https://github.com/${{ github.repository }}.git ${{ env.EXTRA_ARGS }}
+            -- -s settings.xml -DskipTests
 
       - name: Upload result to GitHub Code Scanning
         if: always() && github.ref_name == 'master' && inputs.publish-sarif
@@ -132,5 +132,5 @@ jobs:
             --severity-threshold=high
             --org=teamforeldrepenger
             --project-name=${{ github.repository }}
-            --remote-repo-url=https://github.com/${{ github.repository }}.git
+            --remote-repo-url=https://github.com/${{ github.repository }}.git ${{ env.EXTRA_ARGS }}
             -- -s settings.xml -DskipTests ${{ env.EXTRA_ARGS }}
