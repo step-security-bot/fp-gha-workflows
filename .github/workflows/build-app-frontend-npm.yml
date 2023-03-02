@@ -28,6 +28,11 @@ on:
         type: boolean
         description: Skal docker image pushes?
         default: false
+      clean-install:
+        required: false
+        type: boolean
+        description: Kjøre clean install?
+        default: false
     outputs:
       build-version:
         description: "Build version"
@@ -68,6 +73,11 @@ jobs:
           node-version: ${{ inputs.node-version }}
           registry-url: https://npm.pkg.github.com/
           scope: '@navikt'
+          cache: "npm"
+      
+      - name: clean install
+        if: inputs.clean-install
+        run: npm ci
 
       - run: npm install --legacy-peer-deps
       - run: npm run jest
