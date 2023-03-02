@@ -96,7 +96,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Bygg server
-        run: cd ./server && yarn install --frozen-lockfile
+        run: cd ./server && yarn install --immutable
 
       - name: Generate build version
         id: generate-build-version
