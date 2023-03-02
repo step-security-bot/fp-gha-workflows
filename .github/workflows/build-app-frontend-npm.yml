@@ -68,7 +68,6 @@ jobs:
           node-version: ${{ inputs.node-version }}
           registry-url: https://npm.pkg.github.com/
           scope: '@navikt'
-          cache: 'npm'
 
       - run: npm install --legacy-peer-deps
       - run: npm run jest
