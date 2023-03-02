@@ -96,16 +96,7 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
 
       - name: Bygg server
-        if: github.actor != 'dependabot[bot]'
-        run: cd ./server && yarn install --ignore-optional --no-progress --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-
-      - name: Bygg server
-        if: github.actor == 'dependabot[bot]'
-        run: cd ./server && yarn install --ignore-optional --no-progress --frozen-lockfile
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: cd ./server && yarn install --immutable
 
       - name: Generate build version
         id: generate-build-version
