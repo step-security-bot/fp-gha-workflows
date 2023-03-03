@@ -1,12 +1,21 @@
-name: Promote to env
+name: Deploy
 
 on:
   workflow_call:
     inputs:
-      cluster:
+      environment:
         required: true
         type: string
-        description: 'The clusters to deploy to. Array with comma separated elements.'
+        description: 'The enviroment to deployed to. Either dev, prod og both'
+      platform:
+        required: true
+        type: string
+        description: 'The platform/zone to deploy to. Either fss eller gcp'
+      namespace:
+        required: false
+        type: string
+        description: 'The namespace to deploy to.'
+        default: 'teamforeldrepenger'
       issue-number:
         required: true
         type: string
@@ -14,12 +23,8 @@ on:
 
 jobs:
   promote:
-    name: to
+    name: promote
     runs-on: 'ubuntu-latest'
-    strategy:
-      fail-fast: true
-      matrix:
-        cluster: ${{ fromJson(inputs.cluster) }}
     steps:
       - name: Get information from issue
         id: issue_comment
@@ -44,18 +49,21 @@ jobs:
         with:
           ref: ${{ steps.issue_comment.outputs.sha }}
 
-      - name: Deploy to ${{ matrix.cluster }}
-        id: deploy
+      - name: Utleder cluster ut i fra environment og platform
+        run: echo "CLUSTER=${{ inputs.environment }}-${{ inputs.platform }}" >> $GITHUB_ENV
+
+      - name: Deploy to ${{ env.CLUSTER }}
+        if: startsWith(env.CLUSTER, 'dev-') || startsWith(env.CLUSTER, 'prod-')
         uses: nais/deploy/actions/deploy@v1
         env:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: ${{ matrix.cluster }}
+          CLUSTER: ${{ env.CLUSTER }}
           RESOURCE: .deploy/naiserator.yaml
-          VARS: .deploy/${{ matrix.cluster }}-teamforeldrepenger.json
+          VARS: .deploy/${{ env.CLUSTER }}-${{ inputs.namespace }}.json
 
-      - name: Oppdater kommentar med deployment status ved feil mot ${{ matrix.cluster }}
-        if: steps.deploy.outcome != 'success'
+      - name: Oppdater kommentar med deployment status ved feil mot ${{ env.CLUSTER }}
+        if: failure()
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -64,12 +72,12 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til ${{ matrix.cluster }} teamforeldrepenger feilet'})
+                            body: 'promote til ${{ env.CLUSTER }} ${{ inputs.namespace }} feilet'})
             github.rest.issues.addLabels({...issue,
                             labels: ['deployment-failed']})
 
-      - name: Oppdater kommentar med deployment status mot ${{ matrix.cluster }}
-        if: steps.deploy.outcome == 'success'
+      - name: Oppdater kommentar med deployment status mot ${{ env.CLUSTER }}
+        if: success()
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -78,6 +86,6 @@ jobs:
                             repo: context.issue.repo,
                             issue_number: ${{ inputs.issue-number }} }
             github.rest.issues.createComment({...issue,
-                            body: 'promote til ${{ matrix.cluster }} teamforeldrepenger utført'})
+                            body: 'promote til ${{ env.CLUSTER }} ${{ inputs.namespace }} utført'})
             github.rest.issues.addLabels({...issue,
-                            labels: ['deployment','${{ matrix.cluster }}-teamforeldrepenger']})
+                            labels: ['deployment','${{ env.CLUSTER }}-${{ inputs.namespace }}']})
