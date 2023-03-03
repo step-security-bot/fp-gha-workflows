@@ -62,7 +62,7 @@ jobs:
             -- -s settings.xml -DskipTests
 
       - name: Upload result to GitHub Code Scanning
-        if: always() && github.ref_name == 'master' && inputs.publish-sarif
+        if: always() && github.ref_name == 'master' && inputs.upload-sarif
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: snyk.sarif
