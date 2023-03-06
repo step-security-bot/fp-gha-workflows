@@ -37,7 +37,7 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           security-checks: 'vuln'
-          image-ref: 'ghcr.io/${{ github.repository }}/${{ inputs.build-version }}' ghcr.io/navikt/fp-baseimages/java:17-appdynamics
+          image-ref: 'ghcr.io/${{ github.repository }}/${{ inputs.build-version }}'
           format: 'table'
           exit-code: '1'
           severity: 'HIGH,CRITICAL'
