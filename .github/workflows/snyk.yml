@@ -1,4 +1,4 @@
-name: Snyk og Trivy
+name: Snyk
 
 on:
   workflow_call:
