@@ -22,7 +22,7 @@ on:
         required: false
         type: boolean
         description: Skal sonar scan brukes?
-        default: false
+        default: true
       build-image:
         required: false
         type: boolean
