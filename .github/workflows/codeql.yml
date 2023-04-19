@@ -55,10 +55,6 @@ jobs:
           java-version: ${{ inputs.java-version }}
           distribution: 'temurin'
           cache: 'maven'
-
-      - run: |
-        make bootstrap
-        make release
         
       - name: Generate build version
         id: generate-build-version
