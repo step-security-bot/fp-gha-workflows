@@ -73,11 +73,9 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           category: "/language:java"
 
-      - uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: results/java.sarif
 
 
 
