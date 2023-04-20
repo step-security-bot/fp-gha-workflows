@@ -13,6 +13,11 @@ on:
         type: string
         description: Språk som skal scannes
         default: 'java'
+      config-file:
+        required: false
+        type: string
+        description: Path of the config file to use
+        default: ''
       use-reader:
         required: false
         type: boolean
@@ -35,6 +40,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ inputs.language }}
+          config-file: ${{ inputs.config-file }}
 
       - name: Create maven .m2 settings for GITHUB
         if: inputs.language == 'java' && !inputs.use-reader
