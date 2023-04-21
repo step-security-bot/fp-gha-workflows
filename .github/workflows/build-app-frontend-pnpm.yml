@@ -13,11 +13,6 @@ on:
         type: string
         description: Node version som brukes.
         default: "18.8.0"
-      legacy-peer-deps:
-        required: false
-        type: string
-        description: Skal legge på --legacy-peer-deps ved npm install.
-        default: true
       build-image:
         required: false
         type: boolean
@@ -47,27 +42,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Installing pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 7.28.0
-
-      - name: Set up NODE med pnpm
-        uses: actions/setup-node@v3
-        with:
-          node-version: ${{ inputs.node-version }}
-          scope: "@navikt"
-          cache: "pnpm"
-
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run test
-      - run: pnpm run build
-
       - name: Generate build version
         id: generate-build-version
         run: echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
 
       - name: Print build version
+        run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
+
+      - name: Set build version to env variable
         run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
 
       - name: Login to GitHub Packages Docker Registry
@@ -87,13 +69,9 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       - name: Build and push
-        if: inputs.build-image
-        uses: docker/build-push-action@v4
+        uses: docker/bake-action@v2.3.0
+        env: 
+          TAG-PROD: ${{ steps.generate-build-version.outputs.build-version }}
         with:
-          context: .
-          platforms: linux/amd64, linux/arm64
-          pull: true
           push: ${{ inputs.push-image }}
-          tags: ghcr.io/${{ github.repository }}:${{ steps.generate-build-version.outputs.build-version }}, ghcr.io/${{ github.repository }}:latest
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          

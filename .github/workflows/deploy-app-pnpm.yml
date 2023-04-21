@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  workflow_call:
+    inputs:
+      image:
+        required: true
+        type: string
+        description: "Image navn"
+      cluster:
+        required: true
+        type: string
+        description: "The cluster to deploy to."
+      namespace:
+        required: false
+        type: string
+        description: "The namespace to deploy to."
+        default: "teamforeldrepenger"
+      app:
+        required: true
+        type: string
+        description: "The app to deploy."
+
+jobs:
+  promote:
+    name: promote
+    environment: ${{ inputs.cluster }}:${{ inputs.app }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Setter IMAGE som brukes i deploy filen
+        run: echo "IMAGE=${{ inputs.image }}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+
+      - name: Deploy to ${{ inputs.cluster }}
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          PRINT_PAYLOAD: true
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: ${{ inputs.cluster }}
+          RESOURCE: .deploy/naiserator.yaml
+          VARS: .deploy/${{ inputs.app }}/${{ inputs.cluster }}-${{ inputs.app }}.json
