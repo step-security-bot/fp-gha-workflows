@@ -95,4 +95,6 @@ jobs:
 
       - name: Clean up generated stuff before caching
         run: |
-          rm ~/.m2/repository/no/nav/foreldrepenger -r
+          if [[ -d "~/.m2/repository/no/nav/foreldrepenger" ]]; then
+            rm ~/.m2/repository/no/nav/foreldrepenger -r
+          fi
