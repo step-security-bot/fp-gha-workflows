@@ -70,7 +70,7 @@ jobs:
 
       - name: Maven install and test
         id: build-and-test
-        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@action/cleanup
+        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
@@ -86,7 +86,7 @@ jobs:
 
       - name: Bygg og push docker image
         if: inputs.build-image
-        uses: navikt/fp-gha-workflows/.github/actions/build-push-docker-image@action/cleanup
+        uses: navikt/fp-gha-workflows/.github/actions/build-push-docker-image@main
         with:
           build-version: ${{ steps.build-and-test.outputs.build-version }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
