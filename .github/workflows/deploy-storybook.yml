@@ -1,0 +1,93 @@
+name: Deploy storybook
+
+on:
+  workflow_call:
+    inputs:
+      runs-on:
+        required: false
+        type: string
+        description: Miljø versjon som skal brukes til bygg.
+        default: "ubuntu-latest"
+      package-manager:
+        required: false
+        type: string
+        description: Hvilken package manager en skal bruke (npm|pnpm|yarn)
+        default: 'yarn'
+      node-version:
+        required: false
+        type: string
+        description: Node version som brukes.
+        default: "18.8.0"
+env:
+  NODE_OPTIONS: '--max_old_space_size=6144'
+
+jobs:
+  deploy-storybook:
+    name: Deploy storybook ${{ inputs.package-manger }}
+    runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+
+      - name: Sette yarn-config
+        if: inputs.package-manager == 'yarn'
+        run: |
+          yarn config set npmScopes.navikt.npmRegistryServer "https://npm.pkg.github.com"
+          yarn config set npmScopes.navikt.npmAlwaysAuth true
+          yarn config set npmScopes.navikt.npmAuthToken $NPM_AUTH_TOKEN
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+
+      - name: Set up NODE med yarn
+        if: inputs.package-manager == 'yarn'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          cache: 'yarn'
+          cache-dependency-path: |
+            node_modules/.cache/nx
+            yarn.lock
+
+      - name: Set remote url med token
+        run: git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+
+      - name: Yarn install and build
+        if: inputs.package-manager == 'yarn'
+        run: |
+          yarn install --immutable
+          yarn build
+
+      - name: Deploy storybook yarn
+        if: inputs.package-manager == 'yarn'
+        run: |
+          yarn storybook-clean-deploy-folder && yarn storybook-build-all && yarn storybook-create-deploy-folder
+          yarn gh-pages -d .storybook-static-build -t true -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up NODE med npm
+        if: inputs.package-manager == 'npm'
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ inputs.node-version }}
+          registry-url: https://npm.pkg.github.com/
+          scope: '@navikt'
+          cache: "pnpm"
+
+      - name: Pnpm install and build
+        if: inputs.package-manager == 'pnpm'
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+        env:
+          GH_TOKEN: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy storybook npm
+        if: inputs.package-manager == 'npm'
+        run: |
+          pnpm storybook-deploy-clean-folder && pnpm storybook-deploy-build-all && pnpm storybook-deploy-create-folder &&  pnpm storybook-deploy-to-github
+          pnpm gh-pages -d .storybook-static-build -t true -u "github-actions-bot <support+actions@github.com>"
+        env:
+          GH_TOKEN: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
