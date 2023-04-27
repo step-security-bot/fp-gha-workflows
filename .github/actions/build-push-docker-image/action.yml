@@ -26,15 +26,15 @@ runs:
         password: ${{ inputs.github-token }}
 
     - name: Set up QEMU
-      if: inputs.build-image == 'true'
+      if: inputs.push-image == 'true'
       uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
-      if: inputs.build-image == 'true'
+      if: inputs.push-image == 'true'
       uses: docker/setup-buildx-action@v2
 
     - name: Build and push
-      if: inputs.build-image == 'true' && inputs.bake-action == 'false'
+      if: inputs.push-image == 'true' && inputs.bake-action == 'false'
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -46,7 +46,7 @@ runs:
         cache-to: type=gha,mode=max
 
     - name: Build and push with bake
-      if: inputs.build-image == 'true' && inputs.bake-action == 'true'
+      if: inputs.push-image == 'true' && inputs.bake-action == 'true'
       uses: docker/bake-action@v3.0.1
       env:
         TAG-PROD: ${{ inputs.build-version }}
