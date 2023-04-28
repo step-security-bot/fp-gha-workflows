@@ -54,8 +54,6 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       TZ: "Europe/Oslo"
-      DATABASE_HOST: localhost
-      DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
     outputs:
       build-version: ${{ steps.build-and-test.outputs.build-version }}
     steps:
@@ -70,6 +68,9 @@ jobs:
           github-token: ${{ (github.actor != 'dependabot[bot]' && inputs.use-reader && secrets.READER_TOKEN) || secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
           t-2c: ${{ inputs.t-2c }}
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Sonar analyse
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
@@ -78,6 +79,8 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATABASE_HOST: localhost
+          DATABASE_PORT: ${{ job.services.postgres.ports[5432] }}
 
       - name: Clean up generated stuff before caching
         run: |
