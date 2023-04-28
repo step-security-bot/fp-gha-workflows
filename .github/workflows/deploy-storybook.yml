@@ -32,11 +32,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up NODE
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+        if: inputs.package-manager == 'pnpm'
         with:
-          node-version: ${{ inputs.node-version }}
-          cache: ${{ inputs.package-manager }}
+          version: latest
 
       - name: Sette yarn-config
         if: inputs.package-manager == 'yarn'
