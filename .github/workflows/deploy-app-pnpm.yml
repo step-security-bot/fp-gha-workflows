@@ -21,21 +21,17 @@ on:
         type: string
         description: "The app to deploy."
 
+env:
+  IMAGE: ${{ inputs.image }} # Brukes i naiserator.yaml
+
 jobs:
-  promote:
-    name: promote
+  deploy:
+    name: deploy
     environment: ${{ inputs.cluster }}:${{ inputs.app }}
     runs-on: "ubuntu-latest"
     steps:
-      - name: Setter IMAGE som brukes i deploy filen
-        run: echo "IMAGE=${{ inputs.image }}" >> $GITHUB_ENV
-
-      - name: Checkout
-        uses: actions/checkout@v3.3.0
-        with:
-          fetch-depth: 0
-
-      - name: Deploy to ${{ inputs.cluster }}
+      - uses: actions/checkout@v3.3.0
+      - name: Deploy ${{ inputs.cluster }}
         uses: nais/deploy/actions/deploy@v1
         env:
           PRINT_PAYLOAD: true
