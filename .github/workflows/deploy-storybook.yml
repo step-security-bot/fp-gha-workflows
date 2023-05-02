@@ -67,6 +67,7 @@ jobs:
         if: inputs.package-manager == 'yarn'
         run: |
           yarn install --immutable
+          yarn build
 
       - name: Pnpm install
         if: inputs.package-manager == 'pnpm'
