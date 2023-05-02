@@ -13,11 +13,6 @@ on:
         type: string
         description: Språk som skal scannes
         default: 'java'
-      config-file:
-        required: false
-        type: string
-        description: Path of the config file to use
-        default: ''
       use-reader:
         required: false
         type: boolean
@@ -40,7 +35,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ inputs.language }}
-          config-file: ${{ inputs.config-file }}
+          config-file: navikt/fp-gha-workflows/.github/codeql/codeql-config.yml@main
 
       - name: Maven install and test
         if: inputs.language == 'java'
