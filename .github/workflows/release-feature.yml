@@ -31,25 +31,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3.3.0
 
-      - name: Create maven .m2 settings
-        uses: whelk-io/maven-settings-xml-action@v21
+      - name: Setup java and maven
+        uses: navikt/fp-gha-workflows/.github/actions/setup-java-maven@main
         with:
-          repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
-              "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" }}]'
-          servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ secrets.GITHUB_TOKEN }}" }]'
-          output_file: settings.xml
-
-      - name: Set up JDK-${{ inputs.java-version }} with cache
-        uses: actions/setup-java@v3
-        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
-          distribution: 'temurin'
-          cache: 'maven'
-
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
-        with:
-          maven-version: 3.9.1
 
       - name: Publish artifacts
         run: |

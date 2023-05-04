@@ -1,13 +1,6 @@
-name: 'Build and push docker image'
-description: 'Build and push docker image'
+name: 'Maven install'
+description: 'Maven install'
 inputs:
-  github-token:
-    description: 'Token to use when signing into ghcr.io'
-    required: true
-  java-version:
-    description: 'Java SDK version to use'
-    required: false
-    default: '17'
   t-2c:
     description: 'Thread config to use'
     required: false
@@ -23,21 +16,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Create maven .m2 settings
-      uses: whelk-io/maven-settings-xml-action@v21
-      with:
-        repositories: '[{"id": "github", "name": "github", "url": "https://maven.pkg.github.com/${{ github.repository }}",
-              "releases": { "enabled": "true" }, "snapshots": { "enabled": "false" }}]'
-        servers: '[{ "id": "github", "username": "${{ github.actor }}", "password": "${{ inputs.github-token }}" }]'
-        output_file: 'settings.xml'
-
-    - name: Set up JDK-${{ inputs.java-version }} with cache
-      uses: actions/setup-java@v3
-      with:
-        java-version: ${{ inputs.java-version }}
-        distribution: 'temurin'
-        cache: 'maven'
-
     - name: Generate build version
       id: generate-build-version
       shell: bash
