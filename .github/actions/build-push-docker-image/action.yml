@@ -34,7 +34,7 @@ runs:
       uses: docker/setup-buildx-action@v2
 
     - name: Build and push
-      if: inputs.push-image == 'true' && inputs.bake-action == 'false'
+      if: inputs.bake-action == 'false'
       uses: docker/build-push-action@v4
       with:
         context: .
@@ -46,7 +46,7 @@ runs:
         cache-to: type=gha,mode=max
 
     - name: Build and push with bake
-      if: inputs.push-image == 'true' && inputs.bake-action == 'true'
+      if: && inputs.bake-action == 'true'
       uses: docker/bake-action@v3.0.1
       env:
         TAG-PROD: ${{ inputs.build-version }}
