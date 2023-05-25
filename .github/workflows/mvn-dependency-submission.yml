@@ -1,0 +1,27 @@
+name: Maven Dependency Submission
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        description: Java SDK versjon som skal brukes.
+        default: '17'
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.3.0
+
+      - name: Setup java and maven
+        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
+        with:
+          github-token: ${{ (github.actor != 'dependabot[bot]' && secrets.READER_TOKEN) || secrets.GITHUB_TOKEN }}
+          java-version: ${{ inputs.java-version }}
+
+      - name: Submit Dependency Snapshot to Github Security
+        uses: advanced-security/maven-dependency-submission-action@d682d5d68a398c90e9b35f8c564cd8e1918d6a24
+        with:
+          settings-file: settings.xml
+          maven-args: -DskipTests
