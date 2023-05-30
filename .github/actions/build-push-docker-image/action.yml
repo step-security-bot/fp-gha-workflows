@@ -26,11 +26,9 @@ runs:
         password: ${{ inputs.github-token }}
 
     - name: Set up QEMU
-      if: inputs.push-image == 'true'
       uses: docker/setup-qemu-action@v2
 
     - name: Set up Docker Buildx
-      if: inputs.push-image == 'true'
       uses: docker/setup-buildx-action@v2
 
     - name: Build and push
