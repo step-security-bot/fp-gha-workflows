@@ -36,6 +36,8 @@ on:
 jobs:
   build-and-test:
     name: Build and test
+    permissions:
+      contents: read
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     outputs:
       build-version: ${{ steps.build-and-test.outputs.build-version }}

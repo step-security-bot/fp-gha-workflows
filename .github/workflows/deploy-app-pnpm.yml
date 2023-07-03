@@ -27,6 +27,8 @@ env:
 jobs:
   deploy:
     name: deploy
+    permissions:
+      contents: read
     environment: ${{ inputs.cluster }}:${{ inputs.app }}
     runs-on: "ubuntu-latest"
     steps:
