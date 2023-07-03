@@ -44,7 +44,7 @@ jobs:
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     permissions:
       security-events: read #${{ ((inputs.sonar-scan && github.actor != 'dependabot[bot]') && 'read') || 'none' }}
-      packages: ${{ (inputs.build-image && 'write') || 'read' }}
+      packages: write #${{ (inputs.build-image && 'write') || 'read' }}
     env:
       TZ: "Europe/Oslo"
     outputs:
