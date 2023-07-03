@@ -29,7 +29,6 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - uses: actions/checkout@v3
 
       - name: Initialize CodeQL
