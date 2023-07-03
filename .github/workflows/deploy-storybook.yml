@@ -27,6 +27,7 @@ jobs:
     environment: gh-pages
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - name: Checkout code
         uses: actions/checkout@v3.3.0
         with:
