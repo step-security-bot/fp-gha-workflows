@@ -42,6 +42,8 @@ jobs:
   build-and-test:
     name: Build and test
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
+    permissions:
+      packages: ${{ (inputs.build-image && 'write') || 'read' }}
     env:
       TZ: "Europe/Oslo"
     outputs:
