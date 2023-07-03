@@ -45,6 +45,8 @@ on:
 jobs:
   build-and-test:
     name: Build and test
+    permissions:
+      packages: write
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     services:
       postgres:
