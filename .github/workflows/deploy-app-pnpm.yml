@@ -30,6 +30,9 @@ jobs:
     environment: ${{ inputs.cluster }}:${{ inputs.app }}
     runs-on: "ubuntu-latest"
     steps:
+      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
+        with:
+          config: ${{ vars.PERMISSIONS_CONFIG }}
       - uses: actions/checkout@v3.3.0
       - name: Deploy ${{ inputs.cluster }}
         uses: nais/deploy/actions/deploy@v1
