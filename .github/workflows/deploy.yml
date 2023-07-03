@@ -26,7 +26,6 @@ jobs:
     environment: ${{ inputs.cluster }}:${{ inputs.namespace }}
     runs-on: 'ubuntu-latest'
     steps:
-      - uses: GitHubSecurityLab/actions-permissions/monitor@v1
       - uses: actions/checkout@v3.3.0
       - name: Deploy ${{ inputs.cluster }}
         uses: nais/deploy/actions/deploy@v1
