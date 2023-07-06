@@ -22,6 +22,11 @@ on:
         type: string
         description: 'Profiles which should be used when releasing an artifact.'
         default: '-Pdeploy'
+      release-branch:
+        required: false
+        type: string
+        description: 'Hvilken branch skal releases. Default master.'
+        default: 'master'
 
 jobs:
   build:
@@ -32,6 +37,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3.3.0
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.release-branch }}
 
       - name: Setup java and maven
         uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
