@@ -27,6 +27,11 @@ on:
         type: string
         description: 'Hvilken branch skal releases. Default master.'
         default: 'master'
+      release-file:
+        required: false
+        type: string
+        description: 'Hvilken pom.xml fil skal releases. Default empty.'
+        default: ''
 
 jobs:
   build:
@@ -49,5 +54,5 @@ jobs:
 
       - name: Publish artifacts
         run: |
-          mvn -B -s settings.xml versions:set -DnewVersion=${{ inputs.release-version }}
+          mvn -B -s settings.xml versions:set -DnewVersion=${{ inputs.release-version }} ${{ inputs.release-file }}
           mvn -B -s settings.xml -DskipTests clean deploy ${{ inputs.mvn-projects }} ${{ inputs.release-profiles }}
