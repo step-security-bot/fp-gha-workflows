@@ -25,7 +25,9 @@ jobs:
   deploy-storybook:
     name: Deploy storybook ${{ inputs.package-manger }}
     permissions:
-      contents: read
+      actions: write
+      pull-requests: write
+      contents: write
       pages: write
     environment: gh-pages
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
