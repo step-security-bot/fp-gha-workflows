@@ -41,7 +41,7 @@ jobs:
           RESOURCE: .deploy/naiserator.yaml
           VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
       - name: Deploy alertkonfigurasjon til ${{ inputs.cluster }}
-        if: inputs.alert && inputs.cluster == 'dev-gcp'
+        if: inputs.alert
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
