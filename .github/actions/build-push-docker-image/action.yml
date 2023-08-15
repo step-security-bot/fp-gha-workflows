@@ -15,10 +15,10 @@ inputs:
     required: false
     description: "Use docker bake action to build and push"
     default: "false"
-  bake-set:
+  bake-platform:
     required: false
     type: string
-    description: Override argument til docker buildx bake
+    description: Platform to target
     default: ""
 runs:
   using: "composite"
@@ -52,7 +52,9 @@ runs:
       if: inputs.bake-action == 'true'
       uses: docker/bake-action@v3.0.1
       env:
-        TAG-PROD: ${{ inputs.build-version }}
+        TAG: ${{ inputs.bake-platform }}-${{ github.sha }}
       with:
-        push: ${{ inputs.push-image == 'true' }}
-        set: ${{ inputs.bake-set }}
+        # push: ${{ inputs.push-image == 'true' }}
+        push: true
+        set: |
+          *.platform=linux/${{ inputs.bake-platform }}
