@@ -64,8 +64,7 @@ runs:
       env:
         TAG: ${{ inputs.bake-platform }}-${{ github.sha }}
       with:
-        # push: ${{ inputs.push-image == 'true' }}
-        push: true
+        push: ${{ inputs.push-image == 'true' }}
         set: |
           *.platform=linux/${{ inputs.bake-platform }}
           *.cache-from=type=local,src=/tmp/.buildx-cache
