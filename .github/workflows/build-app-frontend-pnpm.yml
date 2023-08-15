@@ -23,6 +23,11 @@ on:
         type: boolean
         description: Skal docker image pushes?
         default: false
+      set:
+        required: false
+        type: string
+        description: Override argument til docker buildx bake
+        default: ""
     outputs:
       build-version:
         description: "Build version"
@@ -62,3 +67,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           push-image: ${{ inputs.push-image }}
           bake-action: true
+          bake-set: ${{ inputs.set }}

@@ -1,20 +1,25 @@
-name: 'Build and push docker image'
-description: 'Build and push docker image'
+name: "Build and push docker image"
+description: "Build and push docker image"
 inputs:
   build-version:
-    description: 'Image tag for the docker image'
+    description: "Image tag for the docker image"
     required: true
   github-token:
-    description: 'Token to use when signing into ghcr.io'
+    description: "Token to use when signing into ghcr.io"
     required: true
   push-image:
     required: false
-    description: 'Push the docker image to gchr.io (true|false)'
-    default: 'false'
+    description: "Push the docker image to gchr.io (true|false)"
+    default: "false"
   bake-action:
     required: false
-    description: 'Use docker bake action to build and push'
-    default: 'false'
+    description: "Use docker bake action to build and push"
+    default: "false"
+  bake-set:
+    required: false
+    type: string
+    description: Override argument til docker buildx bake
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -50,3 +55,4 @@ runs:
         TAG-PROD: ${{ inputs.build-version }}
       with:
         push: ${{ inputs.push-image == 'true' }}
+        set: ${{ inputs.bake-set }}
