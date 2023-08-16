@@ -28,6 +28,11 @@ on:
         type: string
         description: Platform to target
         default: ""
+      cache-tag:
+        required: false
+        type: string
+        description: Tag for cache image
+        default: ""
     outputs:
       build-version:
         description: "Build version"
@@ -68,3 +73,4 @@ jobs:
           push-image: ${{ inputs.push-image }}
           bake-action: true
           bake-platform: ${{ inputs.platform }}
+          bake-cache-tag: ${{ inputs.cache-tag }}

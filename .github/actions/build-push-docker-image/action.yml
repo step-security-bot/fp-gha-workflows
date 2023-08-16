@@ -20,6 +20,11 @@ inputs:
     type: string
     description: Platform to target
     default: ""
+  bake-cache-tag:
+    required: false
+    type: string
+    description: Tag for cache image
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -48,32 +53,13 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
-    # - name: Cache Docker layers
-    #   if: inputs.bake-action == 'true'
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: /tmp/.buildx-cache
-    #     key: ${{ runner.os }}-buildx-${{ inputs.bake-platform }}-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-buildx-${{ inputs.bake-platform }}-
-    #       ${{ runner.os }}-buildx-
-
     - name: Build and push with bake
       if: inputs.bake-action == 'true'
       uses: docker/bake-action@v3.0.1
       env:
         TAG: ${{ inputs.bake-platform }}-${{ github.sha }}
+        CACHE_TAG: ${{ inputs.bake-cache-tag }}
       with:
         push: ${{ inputs.push-image == 'true' }}
         set: |
           *.platform=linux/${{ inputs.bake-platform }}
-
-    # - # Temp fix
-    #   # https://github.com/docker/build-push-action/issues/252
-    #   # https://github.com/moby/buildkit/issues/1896
-    #   name: Move cache
-    #   shell: bash
-    #   if: inputs.bake-action == 'true'
-    #   run: |
-    #     rm -rf /tmp/.buildx-cache
-    #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
