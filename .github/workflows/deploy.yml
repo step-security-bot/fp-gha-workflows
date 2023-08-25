@@ -16,11 +16,6 @@ on:
         type: string
         description: 'The namespace to deploy to'
         default: 'teamforeldrepenger'
-      alert:
-        required: false
-        type: boolean
-        description: Deploye alert konfigurasjon for applikasjonen?
-        default: false
 
 env:
   IMAGE: ${{ inputs.image }} # Brukes i naiserator.yaml
@@ -39,12 +34,4 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ inputs.cluster }}
           RESOURCE: .deploy/naiserator.yaml
-          VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
-      - name: Deploy alertkonfigurasjon til ${{ inputs.cluster }}
-        if: inputs.alert && startsWith(inputs.cluster, 'prod') 
-        uses: nais/deploy/actions/deploy@v1
-        env:
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: ${{ inputs.cluster }}
-          RESOURCE: .deploy/alert.yaml
           VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
