@@ -7,6 +7,16 @@ inputs:
   github-token:
     description: "Token to use when signing into ghcr.io"
     required: true
+  project_id:
+    required: true
+    description: "NAIS project id"
+  identity_provider:
+    required: true
+    description: "NAIS identity provider"
+  namespace:
+    required: false
+    description: "NAV team"
+    default: "teamforeldrepenger"
   push-image:
     required: false
     description: "Push the docker image to gchr.io (true|false)"
@@ -41,17 +51,47 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Build and push
+    - name: NAIS login
+      if: inputs.bake-action == 'false'
+      uses: nais/login@v0
+      id: login
+      with:
+        project_id: ${{ inputs.project_id }}
+        identity_provider: ${{ inputs.identity_provider }}
+        team: ${{ inputs.namespace }}
+
+    - name: Docker meta
+      if: inputs.bake-action == 'false'
+      uses: docker/metadata-action@v4
+      id: meta
+      with:
+        images: |
+          ${{ steps.login.outputs.registry }}/${{ github.repository }}
+          ghcr.io/${{ github.repository }}
+        tags: |
+          type=raw,value=${{ steps.generate-build-version.outputs.build-version }}
+        flavor: |
+          latest=true
+
+    - name: Bygg og push docker image
       if: inputs.bake-action == 'false'
       uses: docker/build-push-action@v4
+      id: build_push
       with:
         context: .
         platforms: linux/amd64, linux/arm64
         pull: true
         push: ${{ inputs.push-image == 'true' }}
-        tags: ghcr.io/${{ github.repository }}:${{ inputs.build-version }}, ghcr.io/${{ github.repository }}:latest
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+    - name: Generate SBOM, attest and sign image
+      if: (inputs.push-image == 'true' && inputs.bake-action == 'false')
+      uses: nais/attest-sign@v1.0.0
+      with:
+        image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}@${{ steps.build_push.outputs.digest }}
 
     - name: Build and push with bake
       if: inputs.bake-action == 'true'
