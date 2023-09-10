@@ -59,6 +59,6 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ inputs.cluster }}
-          IMAGE: ${{ steps.login.outputs.registry }}/${{ github.repository }}:${{ inputs.build-version }}
+          IMAGE: ${{ steps.login.outputs.registry }}/${{ github.repository }}:${{ inputs.image }}
           RESOURCE: .deploy/naiserator.yaml
           VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
