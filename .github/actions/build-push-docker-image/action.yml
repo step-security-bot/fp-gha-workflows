@@ -69,7 +69,7 @@ runs:
           ${{ steps.login.outputs.registry }}/${{ github.repository }}
           ghcr.io/${{ github.repository }}
         tags: |
-          type=raw,value=${{ steps.generate-build-version.outputs.build-version }}
+          type=raw,value=${{ inputs.build-version }}
         flavor: |
           latest=true
 
