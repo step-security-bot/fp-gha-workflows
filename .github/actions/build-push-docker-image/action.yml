@@ -27,12 +27,10 @@ inputs:
     default: "false"
   bake-platform:
     required: false
-    type: string
     description: Platform to target
     default: ""
   bake-cache-tag:
     required: false
-    type: string
     description: Tag for cache image
     default: ""
 runs:
