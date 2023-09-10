@@ -34,6 +34,7 @@ jobs:
     name: Build and test
     permissions:
       packages: write
+      id-token: write
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     env:
       TZ: "Europe/Oslo"
