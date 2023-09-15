@@ -1,5 +1,4 @@
 name: Trivy
-
 on:
   workflow_call:
     inputs:
@@ -12,7 +11,6 @@ on:
         type: boolean
         description: Skal trivy og snyk publisere sarif til code ql security?
         default: true
-
 jobs:
   trivy-monitor-docker:
     name: Docker
@@ -20,21 +18,18 @@ jobs:
     runs-on: 'ubuntu-latest'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # ratchet:actions/checkout@v4
       - name: Login to GitHub Packages Docker Registry
         uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Henter image fra forrige steg
         run: docker pull ghcr.io/${{ github.repository }}/${{ inputs.build-version }}
-
       - name: Run Trivy vulnerability scanner non-public repo
         if: inputs.upload-sarif == false
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@69cbbc0cbbf6a2b0bab8dcf0e9f2d7ead08e87e4 # ratchet:aquasecurity/trivy-action@master
         with:
           security-checks: 'vuln'
           image-ref: 'ghcr.io/${{ github.repository }}/${{ inputs.build-version }}'
@@ -42,10 +37,9 @@ jobs:
           exit-code: '1'
           severity: 'HIGH,CRITICAL'
           limit-severities-for-sarif: true
-
       - name: Run Trivy vulnerability scanner for container
         if: inputs.upload-sarif
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@69cbbc0cbbf6a2b0bab8dcf0e9f2d7ead08e87e4 # ratchet:aquasecurity/trivy-action@master
         with:
           security-checks: 'vuln'
           image-ref: 'ghcr.io/${{ github.repository }}/${{ inputs.build-version }}'
@@ -53,9 +47,8 @@ jobs:
           output: 'trivy.sarif'
           severity: 'HIGH,CRITICAL'
           limit-severities-for-sarif: true
-
       - name: Upload Trivy scan results to GitHub Security tab
         if: always() && inputs.upload-sarif
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@04daf014b50eaf774287bf3f0f1869d4b4c4b913 # ratchet:github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy.sarif'

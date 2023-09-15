@@ -1,5 +1,4 @@
 name: Deploy storybook
-
 on:
   workflow_call:
     inputs:
@@ -20,7 +19,6 @@ on:
         default: "18.8.0"
 env:
   NODE_OPTIONS: '--max_old_space_size=6144'
-
 jobs:
   deploy-storybook:
     name: Deploy storybook ${{ inputs.package-manger }}
@@ -31,10 +29,9 @@ jobs:
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # ratchet:actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Sette yarn-config
         if: inputs.package-manager == 'yarn'
         run: |
@@ -43,45 +40,38 @@ jobs:
           yarn config set npmScopes.navikt.npmAuthToken $NPM_AUTH_TOKEN
         env:
           NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@0b715c7ebbf3cf2174d1386336c5f6d3d8d5504a # ratchet:pnpm/action-setup@v2
         if: inputs.package-manager == 'pnpm'
         with:
           version: latest
-
       - name: Set up NODE med yarn cache
         if: inputs.package-manager == 'yarn'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # ratchet:actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
           cache: 'yarn'
           cache-dependency-path: |
             node_modules/.cache/nx
             yarn.lock
-
       - name: Set up NODE med pnpm cache
         if: inputs.package-manager == 'pnpm'
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # ratchet:actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
           cache: "pnpm"
-
       - name: Yarn install
         if: inputs.package-manager == 'yarn'
         run: |
           yarn install --immutable
           yarn build
-
       - name: Pnpm install
         if: inputs.package-manager == 'pnpm'
         run: |
           pnpm install --frozen-lockfile
         env:
           GH_TOKEN: ${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}
-
       - name: Set remote url med token
         run: git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
-
       - name: Deploy storybook yarn
         if: inputs.package-manager == 'yarn'
         run: |
@@ -89,7 +79,6 @@ jobs:
           yarn gh-pages -d .storybook-static-build -t true -u "github-actions-bot <support+actions@github.com>"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Deploy storybook pnpm
         if: inputs.package-manager == 'pnpm'
         run: |

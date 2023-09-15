@@ -1,8 +1,6 @@
 name: Release draft update
-
 on:
   workflow_call:
-
 jobs:
   update_release_draft:
     name: Release draft
@@ -11,6 +9,6 @@ jobs:
       pull-requests: read
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772 # ratchet:release-drafter/release-drafter@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

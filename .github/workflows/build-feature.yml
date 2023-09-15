@@ -1,5 +1,4 @@
 name: Build app
-
 on:
   workflow_call:
     inputs:
@@ -32,7 +31,6 @@ on:
       build-version:
         description: "Build version"
         value: ${{ jobs.build-and-test.outputs.build-version }}
-
 jobs:
   build-and-test:
     name: Build and test
@@ -40,22 +38,19 @@ jobs:
     outputs:
       build-version: ${{ steps.build-and-test.outputs.build-version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # ratchet:actions/checkout@v4
         with:
           fetch-depth: 0 # checkout gir shallow copy - fetch-depth: 0 vil tilgjengeliggjøre tags
-
       - name: Setup java and maven
-        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
+        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@f55dcebb1b39e92cad839c218a397fa008a11081 # ratchet:navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
         with:
           github-token: ${{ (github.actor != 'dependabot[bot]' && inputs.use-reader && secrets.READER_TOKEN) || secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
-
       - name: Maven install and test
         id: build-and-test
-        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@main
+        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@f55dcebb1b39e92cad839c218a397fa008a11081 # ratchet:navikt/fp-gha-workflows/.github/actions/build-maven-application@main
         with:
           t-2c: ${{ inputs.t-2c }}
-
       - name: Sonar analyse
         if: (inputs.sonar-scan && github.actor != 'dependabot[bot]')
         run: |
@@ -63,7 +58,6 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Clean up generated stuff before caching
         run: |
           if [[ -d "~/.m2/repository/no/nav/foreldrepenger" ]]; then

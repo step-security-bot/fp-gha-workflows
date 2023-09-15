@@ -1,5 +1,4 @@
 name: "CodeQL"
-
 on:
   workflow_call:
     inputs:
@@ -18,7 +17,6 @@ on:
         type: boolean
         description: Hvilket token skal brukes?
         default: false
-
 jobs:
   analyze:
     name: Analyze code
@@ -29,38 +27,28 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - uses: actions/checkout@v4
-
+      - uses: actions/checkout@3df4ab11eba7bda6032a0b82a6bb43b11571feac # ratchet:actions/checkout@v4
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@04daf014b50eaf774287bf3f0f1869d4b4c4b913 # ratchet:github/codeql-action/init@v2
         with:
           languages: ${{ inputs.language }}
           config-file: navikt/fp-gha-workflows/.github/codeql/codeql-config.yml@main
-
       - name: Setup java and maven
         if: inputs.language == 'java'
-        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
+        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@f55dcebb1b39e92cad839c218a397fa008a11081 # ratchet:navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main
         with:
           github-token: ${{ (github.actor != 'dependabot[bot]' && secrets.READER_TOKEN) || secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
-
       - name: Maven install and test
         if: inputs.language == 'java'
-        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@main
+        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@f55dcebb1b39e92cad839c218a397fa008a11081 # ratchet:navikt/fp-gha-workflows/.github/actions/build-maven-application@main
         with:
           t-2c: ${{ inputs.t-2c }}
           skip-tests: true
-
       - name: Autobuild
         if: inputs.language != 'java'
-        uses: github/codeql-action/autobuild@v2
-
+        uses: github/codeql-action/autobuild@04daf014b50eaf774287bf3f0f1869d4b4c4b913 # ratchet:github/codeql-action/autobuild@v2
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@04daf014b50eaf774287bf3f0f1869d4b4c4b913 # ratchet:github/codeql-action/analyze@v2
         with:
           category: "/language:${{ inputs.language }}"
-
-
-
-
-
