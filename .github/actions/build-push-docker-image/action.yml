@@ -33,6 +33,22 @@ inputs:
     required: false
     description: Tag for cache image
     default: ""
+  dockerfile:
+    description: "Dockerfile"
+    required: false
+    default: "Dockerfile"
+  docker_context:
+    description: "Docker context"
+    required: false
+    default: "."
+  docker_platforms:
+    description: "Docker platforms"
+    required: false
+    default: "linux/amd64,linux/arm64"
+  app_name:
+    description: "Application name - brukes for monorepo med flere apper ellers brukes repo name."
+    required: false
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -60,8 +76,8 @@ runs:
       id: meta
       with:
         images: |
-          ${{ steps.login.outputs.registry }}/${{ github.repository }}
-          ghcr.io/${{ github.repository }}
+          ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app_name }}
+          ghcr.io/${{ github.repository }}${{ inputs.app_name }}
         tags: |
           type=raw,value=${{ inputs.build-version }}
         flavor: |
@@ -70,9 +86,11 @@ runs:
       if: inputs.bake-action == 'false'
       uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # ratchet:docker/build-push-action@v4
       id: build_push
+      working-directory: ${{ inputs.docker_context }}
       with:
-        context: .
-        platforms: linux/amd64, linux/arm64
+        context: ${{ inputs.docker_context }}
+        file: ${{ inputs.dockerfile }}
+        platforms: ${{ inputs.docker_platforms }}
         pull: true
         push: ${{ inputs.push-image == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
@@ -83,7 +101,7 @@ runs:
       if: (inputs.push-image == 'true' && inputs.bake-action == 'false')
       uses: nais/attest-sign@b21f2f03bcfa1e51f39b52690732017787c4d03f # ratchet:nais/attest-sign@v1.0.0
       with:
-        image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}@${{ steps.build_push.outputs.digest }}
+        image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app_name }}@${{ steps.build_push.outputs.digest }}
     - name: Build and push with bake
       if: inputs.bake-action == 'true'
       uses: docker/bake-action@ad0d2a9712378c502a7d5c590deb0d7a02d2a61d # ratchet:docker/bake-action@v3.0.1

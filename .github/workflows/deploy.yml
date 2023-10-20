@@ -20,6 +20,11 @@ on:
         type: string
         description: 'The namespace to deploy to'
         default: 'false'
+      naiserator:
+        required: false
+        type: string
+        description: 'The naiserator.yaml file name in .deploy/ to use'
+        default: 'naiserator.yaml'
 env:
   IMAGE: ${{ inputs.image }} # Brukes i naiserator.yaml
 jobs:
@@ -36,7 +41,7 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ inputs.cluster }}
-          RESOURCE: .deploy/naiserator.yaml
+          RESOURCE: .deploy/${{ inputs.naiserator }}
           VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
       - name: Login GAR
         uses: nais/login@104bca34b70d1d00fe837bcd0689633978eca744 # ratchet:nais/login@v0
@@ -54,5 +59,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ inputs.cluster }}
           IMAGE: ${{ steps.login.outputs.registry }}/${{ github.repository }}:${{ inputs.image }}
-          RESOURCE: .deploy/naiserator.yaml
+          RESOURCE: .deploy/${{ inputs.naiserator }}
           VARS: .deploy/${{ inputs.cluster }}-${{ inputs.namespace }}.json
