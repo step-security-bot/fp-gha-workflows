@@ -86,7 +86,6 @@ runs:
       if: inputs.bake-action == 'false'
       uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # ratchet:docker/build-push-action@v4
       id: build_push
-      working-directory: ${{ inputs.docker_context }}
       with:
         context: ${{ inputs.docker_context }}
         file: ${{ inputs.dockerfile }}
