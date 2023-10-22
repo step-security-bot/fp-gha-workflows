@@ -49,7 +49,7 @@ on:
         value: ${{ jobs.build.outputs.build-version }}
 jobs:
   build:
-    name: Build and test
+    name: Build image
     permissions:
       packages: write
       id-token: write
