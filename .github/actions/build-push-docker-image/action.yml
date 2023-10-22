@@ -33,10 +33,6 @@ inputs:
     required: false
     description: Tag for cache image
     default: ""
-  dockerfile:
-    description: "Dockerfile"
-    required: false
-    default: "Dockerfile"
   docker_context:
     description: "Docker context"
     required: false
@@ -88,7 +84,6 @@ runs:
       id: build_push
       with:
         context: ${{ inputs.docker_context }}
-        file: ${{ inputs.dockerfile }}
         platforms: ${{ inputs.docker_platforms }}
         pull: true
         push: ${{ inputs.push-image == 'true' }}

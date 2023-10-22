@@ -22,11 +22,6 @@ on:
         type: boolean
         description: Skal docker image pushes?
         default: false
-      dockerfile:
-        required: false
-        type: string
-        description: "Dockerfile"
-        default: "Dockerfile"
       docker_context:
         required: false
         type: string
@@ -78,6 +73,5 @@ jobs:
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
           docker_context: ${{ inputs.docker_context }}
-          dockerfile: ${{ inputs.dockerfile }}
           docker_platforms: ${{ inputs.docker_platforms }}
           app_name: ${{ inputs.app_name }}
