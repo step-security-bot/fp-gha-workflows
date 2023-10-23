@@ -25,17 +25,23 @@ on:
         type: string
         description: 'The naiserator.yaml file name in .deploy/ to use'
         default: 'naiserator.yaml'
-      app:
+      deploy_context:
         required: false
         type: string
-        description: 'The app to be deployed in a monorepo setup - must start with /'
+        description: 'The deploy context /'
         default: ''
+      image_suffix:
+        required: false
+        type: string
+        description: 'The suffix of the image to be deployed'
+        default: ''
+
 env:
   IMAGE: ${{ inputs.image }} # Brukes i naiserator.yaml
 jobs:
   deploy:
     name: deploy
-    environment: ${{ inputs.cluster }}:${{ inputs.namespace }}${{ inputs.app }}
+    environment: ${{ inputs.cluster }}:${{ inputs.namespace }}${{ inputs.image_suffix }}
     runs-on: 'ubuntu-latest'
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
@@ -63,6 +69,6 @@ jobs:
           PRINT_PAYLOAD: true
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ inputs.cluster }}
-          IMAGE: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app }}:${{ inputs.image }}
+          IMAGE: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.image_suffix }}:${{ inputs.image }}
           RESOURCE: .deploy/${{ inputs.naiserator_file }}
-          VARS: .deploy${{ inputs.app }}/${{ inputs.cluster }}-${{ inputs.namespace }}.json
+          VARS: .deploy${{ inputs.deploy_context }}/${{ inputs.cluster }}-${{ inputs.namespace }}.json

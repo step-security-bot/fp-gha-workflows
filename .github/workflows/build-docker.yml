@@ -36,10 +36,10 @@ on:
         description: "Docker platforms"
         type: string
         default: "linux/amd64,linux/arm64"
-      app_name:
+      image_suffix:
         required: false
         type: string
-        description: Hvilken app skal bygges under ./apps/ mappa
+        description: Hvilken app skal bygges under ./apps/ mappa og legger inn en suffiks til navnet av det generert image
         default: ''
 
     outputs:
@@ -79,4 +79,4 @@ jobs:
           docker_context: ${{ inputs.docker_context }}
           docker_platforms: ${{ inputs.docker_platforms }}
           dockerfile: ${{ inputs.dockerfile }}
-          app_name: ${{ inputs.app_name }}
+          image_suffix: ${{ inputs.image_suffix }}

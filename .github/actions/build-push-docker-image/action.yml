@@ -19,7 +19,7 @@ inputs:
     default: "teamforeldrepenger"
   push-image:
     required: false
-    description: "Push the docker image to gchr.io (true|false)"
+    description: "Push the docker image (true|false)"
     default: "false"
   dockerfile:
     description: "Dockerfile"
@@ -33,8 +33,8 @@ inputs:
     description: "Docker platforms"
     required: false
     default: "linux/amd64,linux/arm64"
-  app_name:
-    description: "Application name - brukes for monorepo med flere apper ellers brukes repo name."
+  image_suffix:
+    description: "Adds a suffiks to the generated docker image name"
     required: false
     default: ""
 runs:
@@ -72,8 +72,8 @@ runs:
       id: meta
       with:
         images: |
-          ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app_name }}
-          ghcr.io/${{ github.repository }}${{ inputs.app_name }}
+          ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.image_suffix }}
+          ghcr.io/${{ github.repository }}${{ inputs.image_suffix }}
         tags: |
           type=raw,value=${{ inputs.build-version }}
           # set latest tag for default branch (master)
@@ -95,4 +95,4 @@ runs:
       if: inputs.push-image == 'true'
       uses: nais/attest-sign@b21f2f03bcfa1e51f39b52690732017787c4d03f # ratchet:nais/attest-sign@v1.0.0
       with:
-        image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app_name }}@${{ steps.build_push.outputs.digest }}
+        image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.image_suffix }}@${{ steps.build_push.outputs.digest }}
