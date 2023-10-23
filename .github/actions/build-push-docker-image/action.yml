@@ -21,18 +21,6 @@ inputs:
     required: false
     description: "Push the docker image to gchr.io (true|false)"
     default: "false"
-  bake-action:
-    required: false
-    description: "Use docker bake action to build and push"
-    default: "false"
-  bake-platform:
-    required: false
-    description: Platform to target
-    default: ""
-  bake-cache-tag:
-    required: false
-    description: Tag for cache image
-    default: ""
   dockerfile:
     description: "Dockerfile"
     required: true
@@ -63,7 +51,6 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@885d1462b80bc1c1c7f0b00334ad271f09369c55 # ratchet:docker/setup-buildx-action@v2
     - name: NAIS login
-      if: inputs.bake-action == 'false'
       uses: nais/login@104bca34b70d1d00fe837bcd0689633978eca744 # ratchet:nais/login@v0
       id: login
       with:
@@ -81,7 +68,6 @@ runs:
           exit 1
         fi
     - name: Docker meta
-      if: inputs.bake-action == 'false'
       uses: docker/metadata-action@818d4b7b91585d195f67373fd9cb0332e31a7175 # ratchet:docker/metadata-action@v4
       id: meta
       with:
@@ -90,10 +76,9 @@ runs:
           ghcr.io/${{ github.repository }}${{ inputs.app_name }}
         tags: |
           type=raw,value=${{ inputs.build-version }}
-        flavor: |
-          latest=true
+          # set latest tag for default branch (master)
+          type=raw,value=latest,enable={{is_default_branch}}
     - name: Bygg og push docker image
-      if: inputs.bake-action == 'false'
       uses: docker/build-push-action@0a97817b6ade9f46837855d676c4cca3a2471fc9 # ratchet:docker/build-push-action@v4
       id: build_push
       with:
@@ -107,17 +92,7 @@ runs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Generate SBOM, attest and sign image
-      if: (inputs.push-image == 'true' && inputs.bake-action == 'false')
+      if: inputs.push-image == 'true'
       uses: nais/attest-sign@b21f2f03bcfa1e51f39b52690732017787c4d03f # ratchet:nais/attest-sign@v1.0.0
       with:
         image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}${{ inputs.app_name }}@${{ steps.build_push.outputs.digest }}
-    - name: Build and push with bake
-      if: inputs.bake-action == 'true'
-      uses: docker/bake-action@ad0d2a9712378c502a7d5c590deb0d7a02d2a61d # ratchet:docker/bake-action@v3.0.1
-      env:
-        TAG: ${{ inputs.bake-platform }}-${{ github.sha }}
-        CACHE_TAG: ${{ inputs.bake-cache-tag }}
-      with:
-        push: ${{ inputs.push-image == 'true' }}
-        set: |
-          *.platform=linux/${{ inputs.bake-platform }}
