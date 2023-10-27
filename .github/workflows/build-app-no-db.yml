@@ -37,6 +37,11 @@ on:
         type: boolean
         description: Hvilket token skal brukes?
         default: false
+      namespace:
+        required: false
+        type: string
+        description: 'The namespace to push images to'
+        default: 'teamforeldrepenger'
     outputs:
       build-version:
         description: "Build version"
@@ -83,6 +88,7 @@ jobs:
           push-image: ${{ inputs.push-image }}
           project_id: ${{ vars.NAIS_MANAGEMENT_PROJECT_ID }}
           identity_provider: ${{ secrets.NAIS_WORKLOAD_IDENTITY_PROVIDER }}
+          namespace: ${{ inputs.namespace }}
       - name: Clean up generated stuff before caching
         run: |
           rm ~/.m2/repository/no/nav/foreldrepenger -r
