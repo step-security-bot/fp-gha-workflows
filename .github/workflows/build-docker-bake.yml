@@ -50,7 +50,7 @@ jobs:
         id: generate-build-version
         run: |
           if [[ '${{ inputs.branch }}' != '' ]]; then
-            echo "build-version=branch-$(date +%Y.%m.%d.%H%M%S)-$(git log -1 '--format=format:%H' | cut -c1-7)" >> $GITHUB_OUTPUT
+            echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(git log -1 '--format=format:%H' | cut -c1-7)-branch" >> $GITHUB_OUTPUT
           else
             echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
