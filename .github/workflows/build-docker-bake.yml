@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0
       - name: Generate build version
         id: generate-build-version
-        run: echo "build-version=${{ (inputs.branch != '' && inputs.branch) || '' }}-$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+        run: echo "build-version=${{ (inputs.branch != '' && inputs.branch) || '' }}$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
       - name: Print build version
         run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
       - name: Bygg og push docker image
