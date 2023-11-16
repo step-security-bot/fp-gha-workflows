@@ -16,7 +16,6 @@ on:
         required: false
         type: string
         description: Alternativ branch å bygge fra
-        default: false
       bake-platform:
         type: string
         required: false
