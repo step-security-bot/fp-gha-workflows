@@ -49,10 +49,10 @@ jobs:
       - name: Generate build version
         id: generate-build-version
         run: |
-          if [[ ${{ inputs.branch }} != '' ]]; then
-            echo "build-version=branch-(date +%Y.%m.%d.%H%M%S)-$(echo github.event.pull_request.head.sha | cut -c1-7)" >> $GITHUB_OUTPUT
+          if [[ '${{ inputs.branch }}' != '' ]]; then
+            echo "build-version=branch-$(date +%Y.%m.%d.%H%M%S)-$(echo github.event.pull_request.head.sha | cut -c1-7)" >> $GITHUB_OUTPUT
           else
-            echo "build-version=(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
+            echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
           
       - name: Print build version
