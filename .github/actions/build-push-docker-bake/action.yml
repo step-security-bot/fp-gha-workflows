@@ -67,6 +67,7 @@ runs:
       env:
         CACHE_TAG: ${{ steps.generate-cache-tags.outputs.cache-tag }}
       with:
+        no-cache: true
         targets: ${{ inputs.bake-target }}
         push: ${{ inputs.push-image }}
         files: |
