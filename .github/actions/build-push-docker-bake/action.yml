@@ -19,12 +19,10 @@ inputs:
     description: "Push the docker image (true|false)"
     default: "false"
   bake-platform:
-    type: string
     required: false
     description: Platform to target
-    default: ""
+    default: "linux/amd64,linux/arm64"
   bake-target:
-    type: string
     required: true
     description: Bake target
 runs:
@@ -75,4 +73,4 @@ runs:
           ./docker-bake.hcl
           ${{ steps.meta.outputs.bake-file }}
         set: |
-          *.platform=linux/${{ inputs.bake-platform }}
+          *.platform=${{ inputs.bake-platform }}

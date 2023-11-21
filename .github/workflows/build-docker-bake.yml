@@ -20,7 +20,7 @@ on:
         type: string
         required: false
         description: Platform to target
-        default: ""
+        default: "linux/amd64,linux/arm64"
       bake-target:
         type: string
         required: true
@@ -54,7 +54,7 @@ jobs:
           else
             echo "build-version=$(date +%Y.%m.%d.%H%M%S)-$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Print build version
         run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
       - name: Bygg og push docker image
