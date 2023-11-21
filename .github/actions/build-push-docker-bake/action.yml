@@ -63,7 +63,7 @@ runs:
     #     image_ref: ${{ steps.login.outputs.registry }}/${{ github.repository }}/${{ inputs.bake-target }}@${{ steps.build_push.outputs.digest }}
 
     - name: Build and push with bake
-      uses: docker/bake-action@ad0d2a9712378c502a7d5c590deb0d7a02d2a61d # ratchet:docker/bake-action@v3.0.1
+      uses: docker/bake-action@849707117b03d39aba7924c50a10376a69e88d7d # ratchet:docker/bake-action@v4.1.0
       env:
         CACHE_TAG: ${{ steps.generate-cache-tags.outputs.cache-tag }}
       with:
