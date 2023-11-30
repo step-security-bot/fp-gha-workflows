@@ -50,7 +50,7 @@ jobs:
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     services:
       postgres:
-        image: index.docker.io/library/postgres@sha256:d0c68cd506cde10ddd890e77f98339a4f05810ffba99c881061a12b30a0525c9 # ratchet:postgres:15
+        image: index.docker.io/library/postgres@sha256:302de9d3235dbab5e89a87f889663116259eb7bce4aaeaaa6a1117daaa9a4750 # ratchet:postgres:16
         env:
           POSTGRES_USER: ${{ inputs.postgres-user }}
           POSTGRES_PASSWORD: ${{ inputs.postgres-user }}
