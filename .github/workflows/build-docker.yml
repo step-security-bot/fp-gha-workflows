@@ -50,6 +50,7 @@ jobs:
   build:
     name: Build image
     permissions:
+      contents: read
       packages: write
       id-token: write
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
