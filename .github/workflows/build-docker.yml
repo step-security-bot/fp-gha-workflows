@@ -26,6 +26,7 @@ on:
         required: false
         description: "Dockerfile"
         type: string
+        default: "Dockerfile"
       docker_context:
         required: false
         type: string
