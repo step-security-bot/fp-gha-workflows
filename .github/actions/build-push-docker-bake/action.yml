@@ -78,6 +78,7 @@ runs:
       env:
         CACHE_TAG: ${{ steps.generate-cache-tags.outputs.cache-tag }}
       with:
+        no-cache: ${{ github.actor == 'dependabot[bot]' }}
         targets: ${{ inputs.bake-target }}
         push: ${{ inputs.push-image }}
         files: |
