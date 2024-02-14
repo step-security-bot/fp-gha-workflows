@@ -51,3 +51,8 @@ registries:
     url: https://github.com
     username: x-access-token
     password: ${{ secrets.READER_TOKEN }} # dependabot secret
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily

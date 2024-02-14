@@ -55,17 +55,22 @@ jobs:
     outputs:
       build-version: ${{ steps.build-and-test.outputs.build-version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
         with:
           fetch-depth: 0 # checkout gir shallow copy - fetch-depth: 0 vil tilgjengeliggjøre tags
       - name: Setup java and maven
-        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@main # ratchet:exclude
+        uses: navikt/fp-gha-workflows/.github/actions/setup-java-and-maven@736b68ed07dde771220419795711ce5bb29889d9 # main
         with:
           github-token: ${{ (github.actor != 'dependabot[bot]' && inputs.use-reader && secrets.READER_TOKEN) || secrets.GITHUB_TOKEN }}
           java-version: ${{ inputs.java-version }}
       - name: Maven install and test
         id: build-and-test
-        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@main # ratchet:exclude
+        uses: navikt/fp-gha-workflows/.github/actions/build-maven-application@736b68ed07dde771220419795711ce5bb29889d9 # main
         with:
           t-2c: ${{ inputs.t-2c }}
         env:

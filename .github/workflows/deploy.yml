@@ -48,12 +48,17 @@ jobs:
     environment: ${{ inputs.cluster }}:${{ inputs.namespace }}${{ inputs.image_suffix }}
     runs-on: 'ubuntu-latest'
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
         with:
           ref: ${{ (inputs.branch != '' && inputs.branch) || '' }}
       - name: Deploy ${{ inputs.cluster }} fra Github
         if: inputs.gar == 'false'
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@afaaf1c0eecfa18daad98677b9d17bebb0df7a0e # v2
         env:
           PRINT_PAYLOAD: true
           CLUSTER: ${{ inputs.cluster }}
@@ -69,7 +74,7 @@ jobs:
           team: teamforeldrepenger
       - name: Deploy ${{ inputs.cluster }} fra GAR
         if: inputs.gar == 'true'
-        uses: nais/deploy/actions/deploy@v2
+        uses: nais/deploy/actions/deploy@afaaf1c0eecfa18daad98677b9d17bebb0df7a0e # v2
         env:
           PRINT_PAYLOAD: true
           CLUSTER: ${{ inputs.cluster }}

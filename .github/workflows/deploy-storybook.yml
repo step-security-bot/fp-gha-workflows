@@ -19,6 +19,9 @@ on:
         default: "18.8.0"
 env:
   NODE_OPTIONS: '--max_old_space_size=6144'
+permissions:
+  contents: read
+
 jobs:
   deploy-storybook:
     name: Deploy storybook ${{ inputs.package-manger }}
@@ -28,6 +31,11 @@ jobs:
     environment: gh-pages
     runs-on: ${{ (github.actor == 'dependabot[bot]' && 'ubuntu-latest') || inputs.runs-on }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
         with:

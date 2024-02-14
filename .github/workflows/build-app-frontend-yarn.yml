@@ -26,6 +26,9 @@ on:
       build-version:
         description: "Build version"
         value: ${{ jobs.build-and-test.outputs.build-version }}
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     name: Build and test
@@ -38,6 +41,11 @@ jobs:
     outputs:
       build-version: ${{ steps.generate-build-version.outputs.build-version }}
     steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
       - name: Checkout code
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # ratchet:actions/checkout@v4
         with:
@@ -81,7 +89,7 @@ jobs:
         run: echo "Generated build-version is ${{ steps.generate-build-version.outputs.build-version }}"
       - name: Bygg og push docker image
         if: inputs.build-image
-        uses: navikt/fp-gha-workflows/.github/actions/build-push-docker-image@main # ratchet:exclude
+        uses: navikt/fp-gha-workflows/.github/actions/build-push-docker-image@736b68ed07dde771220419795711ce5bb29889d9 # main
         with:
           build-version: ${{ steps.generate-build-version.outputs.build-version }}
           push-image: ${{ inputs.push-image }}
